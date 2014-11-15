@@ -2,13 +2,14 @@ package littleMaidMobX;
 
 import java.util.Collection;
 
+import wrapper.W_Common;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityCreature;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.ai.attributes.BaseAttributeMap;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
-import net.minecraft.network.play.server.S0BPacketAnimation;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.potion.Potion;
 import net.minecraft.potion.PotionEffect;
 import net.minecraft.stats.StatBase;
@@ -16,9 +17,9 @@ import net.minecraft.util.ChunkCoordinates;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.IChatComponent;
 import net.minecraft.util.MathHelper;
-import net.minecraft.util.Session;
 import net.minecraft.world.World;
-import net.minecraft.world.WorldServer;
+
+import com.mojang.authlib.GameProfile;
 
 
 public class LMM_EntityLittleMaidAvatar extends EntityPlayer {
@@ -34,9 +35,14 @@ public class LMM_EntityLittleMaidAvatar extends EntityPlayer {
 	private double appendY;
 	private double appendZ;
 
+
+	public LMM_EntityLittleMaidAvatar(World par1World)
+	{
+		super(par1World, W_Common.newGameProfile("1", "LMM_EntityLittleMaidAvatar"));
+	}
 	
 	public LMM_EntityLittleMaidAvatar(World par1World, LMM_EntityLittleMaid par2EntityLittleMaid) {
-		super(par1World, new Session("LMM_EntityLittleMaidAvatar","","").func_148256_e());
+		super(par1World, W_Common.newGameProfile("1", "LMM_EntityLittleMaidAvatar"));
 		
 		// 初期設定
 		avatar = par2EntityLittleMaid;
@@ -48,13 +54,38 @@ public class LMM_EntityLittleMaidAvatar extends EntityPlayer {
 		inventory.player = this;
 	}
 
+	////////////////////////////////////////////////////////////////////////////////////
+	@Override
+	protected void entityInit()
+	{
+		super.entityInit();
+	}
+	public void readEntityFromNBT(NBTTagCompound var1)
+	{
+		super.readEntityFromNBT(var1);
+	}
+	public void writeEntityToNBT(NBTTagCompound var1)
+	{
+		super.writeEntityToNBT(var1);
+	}
+	public ItemStack getHeldItem()
+	{
+		return super.getHeldItem();
+	}
+	public void setCurrentItemOrArmor(int var1, ItemStack var2)
+	{
+		super.setCurrentItemOrArmor(var1, var2);
+	}
+	public String getCommandSenderName(){ return super.getCommandSenderName(); }
+	public World getEntityWorld(){ return super.getEntityWorld(); }
+	////////////////////////////////////////////////////////////////////////////////////
+	
 	@Override
 	protected void applyEntityAttributes() {
 		// 初期設定殺し
 		// 初期設定値はダミーに設定される。
 		super.applyEntityAttributes();
 //		this.func_110148_a(SharedMonsterAttributes.field_111263_d).func_111128_a(0.13000000417232513D);
-
 	}
 
 	@Override
@@ -116,7 +147,7 @@ public class LMM_EntityLittleMaidAvatar extends EntityPlayer {
 			// Client
 			LMM_Client.onCriticalHit(this, par1Entity);
 		} else {
-			((WorldServer)worldObj).getEntityTracker().func_151248_b(avatar, new S0BPacketAnimation(par1Entity, 6));
+//TODO GGG			((WorldServer)worldObj).getEntityTracker().func_151248_b(avatar, new S0BPacketAnimation(par1Entity, 6));
 		}
 	}
 
@@ -125,7 +156,7 @@ public class LMM_EntityLittleMaidAvatar extends EntityPlayer {
 		if (worldObj.isRemote) {
 			LMM_Client.onEnchantmentCritical(this, par1Entity);
 		} else {
-			((WorldServer)worldObj).getEntityTracker().func_151248_b(avatar, new S0BPacketAnimation(par1Entity, 7));
+//TODO GGG			((WorldServer)worldObj).getEntityTracker().func_151248_b(avatar, new S0BPacketAnimation(par1Entity, 7));
 		}
 	}
 
@@ -155,7 +186,8 @@ public class LMM_EntityLittleMaidAvatar extends EntityPlayer {
 
 	@Override
 	public ItemStack getCurrentArmor(int par1) {
-		return avatar.func_130225_q(par1);
+		//TODO GGG		return avatar.func_130225_q(par1);
+		return null;
 	}
 
 	@Override
@@ -196,7 +228,7 @@ public class LMM_EntityLittleMaidAvatar extends EntityPlayer {
 	public int getItemInUseDuration(int pIndex) {
 		return avatar.getSwingStatus(pIndex).getItemInUseDuration();
 	}
-	@Deprecated
+//	@Deprecated
 	@Override
 	public int getItemInUseDuration() {
 		return getItemInUseDuration(avatar.maidDominantArm);
@@ -205,7 +237,7 @@ public class LMM_EntityLittleMaidAvatar extends EntityPlayer {
 	public ItemStack getItemInUse(int pIndex) {
 		return avatar.getSwingStatus(pIndex).getItemInUse();
 	}
-	@Deprecated
+//	@Deprecated
 	@Override
 	public ItemStack getItemInUse() {
 		return getItemInUse(avatar.maidDominantArm);
@@ -214,7 +246,7 @@ public class LMM_EntityLittleMaidAvatar extends EntityPlayer {
 	public int getItemInUseCount(int pIndex) {
 		return avatar.getSwingStatus(pIndex).getItemInUseCount();
 	}
-	@Deprecated
+//	@Deprecated
 	@Override
 	public int getItemInUseCount() {
 		return getItemInUseCount(avatar.maidDominantArm);
@@ -223,7 +255,7 @@ public class LMM_EntityLittleMaidAvatar extends EntityPlayer {
 	public boolean isUsingItem(int pIndex) {
 		return avatar.getSwingStatus(pIndex).isUsingItem();
 	}
-	@Deprecated
+//	@Deprecated
 	@Override
 	public boolean isUsingItem() {
 		return isUsingItem(avatar.maidDominantArm);
@@ -237,7 +269,7 @@ public class LMM_EntityLittleMaidAvatar extends EntityPlayer {
 		isItemReload = isItemPreReload = false;
 		avatar.getSwingStatus(pIndex).clearItemInUse(getEntityServer());
 	}
-	@Deprecated
+//	@Deprecated
 	@Override
 	public void clearItemInUse() {
 //		super.clearItemInUse();
@@ -251,7 +283,7 @@ public class LMM_EntityLittleMaidAvatar extends EntityPlayer {
 		isItemReload = isItemPreReload = false;
 		avatar.getSwingStatus(pIndex).stopUsingItem(getEntityServer());
 	}
-	@Deprecated
+//	@Deprecated
 	@Override
 	public void stopUsingItem() {
 //		super.stopUsingItem();
@@ -265,7 +297,7 @@ public class LMM_EntityLittleMaidAvatar extends EntityPlayer {
 		isItemReload = isItemPreReload;
 		avatar.getSwingStatus(pIndex).setItemInUse(itemstack, i, getEntityServer());
 	}
-	@Deprecated
+//	@Deprecated
 	@Override
 	public void setItemInUse(ItemStack itemstack, int i) {
 //		super.setItemInUse(itemstack, i);
@@ -318,7 +350,6 @@ public class LMM_EntityLittleMaidAvatar extends EntityPlayer {
 	public void playSound(String par1Str, float par2, float par3) {
 		avatar.playSound(par1Str, par2, par3);
 	}
-
 	@Override
 	public ChunkCoordinates getPlayerCoordinates() {
 		return null;
@@ -332,7 +363,6 @@ public class LMM_EntityLittleMaidAvatar extends EntityPlayer {
 	@Override
 	public void addChatMessage(IChatComponent var1) {
 		// チャットメッセージは使わない。
-		// TODO ★
 	}
 
 	// 不要？
@@ -353,18 +383,18 @@ public class LMM_EntityLittleMaidAvatar extends EntityPlayer {
 		return 0;
 	}
 
-	public void func_110149_m(float par1) {
-		avatar.func_110149_m(par1);
+	public void setAbsorptionAmount(float par1) {
+		avatar.setAbsorptionAmount(par1);
 	}
 
-	public float func_110139_bj() {
-		return avatar.func_110139_bj();
+	public float getAbsorptionAmount() {
+		return avatar.getAbsorptionAmount();
 	}
 
 	/**
 	 * 属性値リストを取得
 	 */
-	public BaseAttributeMap func_110140_aT() {
+	public BaseAttributeMap getAttributeMap() {
 //		return super.func_110140_aT();
 		return avatar == null ? super.getAttributeMap() : avatar.getAttributeMap();
 	}
@@ -543,19 +573,5 @@ public class LMM_EntityLittleMaidAvatar extends EntityPlayer {
 	public void damageEntity(DamageSource par1DamageSource, float par2)
 	{
 		super.damageEntity(par1DamageSource, par2);
-	}
-	public void setAbsorptionAmount(float par1)
-	{
-		if (par1 < 0.0F)
-		{
-			par1 = 0.0F;
-		}
-
-		this.getDataWatcher().updateObject(LMM_Statics.dataWatch_AbsorptionAmount, Float.valueOf(par1));
-	}
-
-	public float getAbsorptionAmount()
-	{
-		return this.getDataWatcher().getWatchableObjectFloat(LMM_Statics.dataWatch_AbsorptionAmount);
 	}
 }

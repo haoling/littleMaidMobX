@@ -3,7 +3,7 @@ package littleMaidMobX;
 import java.util.Iterator;
 import java.util.List;
 
-import littleMaidMobX.mmm.lib.MMM_Helper;
+import mmmlibx.lib.MMM_Helper;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockTNT;
 import net.minecraft.block.material.Material;
@@ -53,8 +53,7 @@ public class LMM_InventoryLittleMaid extends InventoryPlayer {
 		armorInventory = new ItemStack[4];
 
 		for (int i = 0; i < par1nbtTagList.tagCount(); i++) {
-			NBTTagCompound nbttagcompound = (NBTTagCompound) par1nbtTagList.getCompoundTagAt(i);	// TODO ★
-//			NBTTagCompound nbttagcompound = (NBTTagCompound) par1nbtTagList.tagAt(i);
+			NBTTagCompound nbttagcompound = par1nbtTagList.getCompoundTagAt(i);
 			int j = nbttagcompound.getByte("Slot") & 0xff;
 			ItemStack itemstack = ItemStack.loadItemStackFromNBT(nbttagcompound);
 

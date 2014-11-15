@@ -1,12 +1,13 @@
 package littleMaidMobX;
 
-import littleMaidMobX.mmm.lib.multiModel.model.mc162.*;
+import mmmlibx.lib.multiModel.model.mc162.*;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.util.MathHelper;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.Vec3;
 
 import org.lwjgl.opengl.GL11;
@@ -142,10 +143,12 @@ public class LMM_RenderLittleMaid extends RenderModelMulti {
 			double par2, double par4, double par6, float par8, float par9) {
 		LMM_EntityLittleMaid lmm = (LMM_EntityLittleMaid)par1EntityLiving;
 		
-		// TODO ★
+		// TODO ★ どこでテクスチャをバインドしている？
 		if(lmm.textureData.textures[0][0] != null)
 		{
-			Minecraft.getMinecraft().renderEngine.bindTexture(lmm.textureData.textures[0][0]);
+			String s = lmm.textureData.textures[0][0].getResourcePath();
+			if(s.startsWith("/")) s = s.substring(1);
+			this.renderManager.renderEngine.bindTexture(new ResourceLocation(LMM_LittleMaidMobX.DOMAIN, s));
 		}
 		
 		fcaps = lmm.maidCaps;

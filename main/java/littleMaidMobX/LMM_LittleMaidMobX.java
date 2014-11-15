@@ -1,25 +1,16 @@
 package littleMaidMobX;
 
-import java.lang.reflect.Field;
-import java.util.LinkedList;
-import java.util.Map;
-
-import littleMaidMobX.mmm.lib.BaseMod;
-import littleMaidMobX.mmm.lib.FileManager;
-import littleMaidMobX.mmm.lib.MMM_Config;
-import littleMaidMobX.mmm.lib.MMM_Helper;
-import littleMaidMobX.mmm.lib.MMM_TextureManager;
-import littleMaidMobX.mmm.lib.ModLoader;
-import littleMaidMobX.mmm.lib.NetClientHandler;
-import littleMaidMobX.mmm.lib.NetServerHandler;
-import littleMaidMobX.mmm.lib.Packet250CustomPayload;
-import net.minecraft.client.entity.EntityClientPlayerMP;
-import net.minecraft.client.gui.inventory.GuiContainer;
+import mmmlibx.lib.FileManager;
+import mmmlibx.lib.MMM_Config;
+import mmmlibx.lib.MMM_Helper;
+import mmmlibx.lib.MMM_TextureManager;
 import net.minecraft.entity.EnumCreatureType;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
 import net.minecraft.stats.Achievement;
 import net.minecraft.world.biome.BiomeGenBase;
+import net.minecraftforge.common.AchievementPage;
+import network.W_Network;
 import cpw.mods.fml.common.Mod;
 import cpw.mods.fml.common.Mod.EventHandler;
 import cpw.mods.fml.common.Mod.Instance;
@@ -32,7 +23,7 @@ import cpw.mods.fml.common.registry.GameRegistry;
 @Mod(	modid = LMM_LittleMaidMobX.DOMAIN,
 		name  = LMM_LittleMaidMobX.DOMAIN,
 		dependencies="required-after:Forge@[10.12.2.1121,)")
-public class LMM_LittleMaidMobX extends BaseMod {
+public class LMM_LittleMaidMobX {
 	
 	public static final String DOMAIN = "lmmx";
 
@@ -90,10 +81,10 @@ public class LMM_LittleMaidMobX extends BaseMod {
 	public static boolean cfg_Aggressive = true;
 
 //	@MLProp(info="used Achievement index.(0 = Disable)")
-	public static int cfg_AchievementID = 222000;
+//	public static int cfg_AchievementID = 222000;
 
 //	@MLProp(info="UniqueEntityId(0 is AutoAssigned.)", max=255)
-	public static int cfg_UniqueEntityId = 30;
+//	public static int cfg_UniqueEntityId = 30;
 
 	public static Achievement ac_Contract;
 
@@ -109,20 +100,17 @@ public class LMM_LittleMaidMobX extends BaseMod {
 		}
 	}
 
-	@Override
 	public String getName() {
-		return "littleMaidMob";
+		return "littleMaidMobX";
 	}
 
-	@Override
 	public String getPriorities() {
 		// MMMLibを要求
 		return "required-after:mod_MMM_MMMLib";
 	}
 
-	@Override
 	public String getVersion() {
-		return "1.6.2-6";
+		return "1.7.2-x";
 	}
 
 	@EventHandler
@@ -132,7 +120,7 @@ public class LMM_LittleMaidMobX extends BaseMod {
 		MMM_Config.init();
 		
 		// MMMLibのRevisionチェック
-		MMM_Helper.checkRevision("6");
+//		MMM_Helper.checkRevision("6");
 		MMM_Config.checkConfig(this.getClass());
 		
 		cfg_defaultTexture = cfg_defaultTexture.trim();
@@ -141,18 +129,19 @@ public class LMM_LittleMaidMobX extends BaseMod {
 		
 		MMM_TextureManager.instance.init();
 
-//		cfg_UniqueEntityId = MMM_Helper.registerEntity(LMM_EntityLittleMaid.class,
-//				"LittleMaid", cfg_UniqueEntityId, this, 80, 3, true, 0xefffef, 0x9f5f5f);
-		EntityRegistry.registerModEntity(LMM_EntityLittleMaid.class, "LittleMaidX", 0, instance, 64, 2, true);
+		EntityRegistry.registerModEntity(LMM_EntityLittleMaid.class, "LittleMaidX", 0, instance, 80, 3, true);
 
 		/* langファイルに移動
 		ModLoader.addLocalization("entity.LittleMaidX.name", "LittleMaidX");
 		ModLoader.addLocalization("entity.LittleMaidX.name", "ja_JP", "リトルメイド");
 		*/
+		// アイテム自体は登録しておき、レシピを隠して無効化
+		spawnEgg = new LMM_ItemSpawnEgg(0, 0);
+		spawnEgg.setUnlocalizedName(DOMAIN + ":spawn_lmmx_egg");
+		spawnEgg.setTextureName(DOMAIN + ":spawn_lmmx_egg");
+		GameRegistry.registerItem(spawnEgg, "spawn_lmmx_egg");
 		if (cfg_enableSpawnEgg) {
 			// 招喚用レシピを追加
-			spawnEgg = new LMM_ItemSpawnEgg(0, 0);
-			GameRegistry.registerItem(spawnEgg, "spawn_lmm_egg", "lmm");
 			GameRegistry.addRecipe(new ItemStack(spawnEgg, 1), new Object[] {
 				"scs",
 				"sbs",
@@ -164,41 +153,11 @@ public class LMM_LittleMaidMobX extends BaseMod {
 			});
 		}
 		
+		ac_Contract = new Achievement("achievement.contract", "contract", 0, 0, spawnEgg, null).initIndependentStat().registerStat();
+		Achievement[] achievements = new Achievement[] { ac_Contract };
+		AchievementPage.registerAchievementPage(new AchievementPage("LittleMaidX", achievements));
+
 		if (MMM_Helper.isClient) {
-			// アチ実験用
-			if (cfg_AchievementID != 0) {
-				/* TODO ★ 実績は後回し
-				while (true) {
-					// アチーブを獲得した状態で未登録だと、UNKNOWNのアチーブが登録されているので削除する。
-					int laid = 5242880 + cfg_AchievementID;
-					StatBase lsb = StatList.getOneShotStat(laid);
-					boolean lflag = false;
-					if (lsb != null) {
-						if (lsb instanceof StatPlaceholder) {
-							StatList.oneShotStats.remove(Integer.valueOf(laid));
-							Debug("Replace Achievement: %d(%d)", cfg_AchievementID, laid);
-							lflag = true;
-						} else {
-							Debug("Already Achievement: %d(%d) - %s(%s)", cfg_AchievementID, laid, lsb.statGuid, lsb.getClass().getSimpleName());
-							break;
-						}
-					}
-					ac_Contract = new Achievement(""+cfg_AchievementID, "littleMaid", 1, -4, Items.cake, AchievementList.bakeCake).initIndependentStat().registerStat();
-//	                ModLoader.AddAchievementDesc(ac_Contract, "(21)", "Capture the LittleMaid!");
-					ModLoader.addAchievementDesc(ac_Contract, "Enlightenment!", "Capture the LittleMaid!");
-
-					// langファイルに移動
-					//ModLoader.addLocalization("achievement.littleMaid", "ja_JP", "悟り。");
-					//ModLoader.addLocalization("achievement.littleMaid.desc", "ja_JP", "メイドさんを入手しました。");
-
-					if (lflag) {
-						LMM_Client.setAchievement();
-					}
-					break;
-				}
-				*/
-			}
-			
 			// 名称変換テーブル
 			/* langファイルに移動
 			ModLoader.addLocalization("littleMaidMob.text.Health", "Health");
@@ -217,9 +176,9 @@ public class LMM_LittleMaidMobX extends BaseMod {
 		LMM_EntityModeManager.init();
 		
 		// アイテムスロット更新用のパケット
-		ModLoader.registerPacketChannel(this, "LMM|Upd");
+		W_Network.init(DOMAIN);
 		
-		Debug("GUID-sneak: %s", LMM_EntityLittleMaid.maidUUIDSneak.toString());
+//		Debug("GUID-sneak: %s", LMM_EntityLittleMaid.maidUUIDSneak.toString());
 	}
 
 	@EventHandler
@@ -228,30 +187,30 @@ public class LMM_LittleMaidMobX extends BaseMod {
 		// デフォルトモデルの設定
 		MMM_TextureManager.instance.setDefaultTexture(LMM_EntityLittleMaid.class, MMM_TextureManager.instance.getTextureBox("default_Orign"));
 		
-		if (cfg_UniqueEntityId == -1) return;
 		// Dominant
+		BiomeGenBase[] biomeList = null;
 		if(cfg_spawnWeight > 0) {
-			if (cfg_Dominant) {
-				// あらゆる場所にスポーンする
-				try {
-					Field afield[] = (BiomeGenBase.class).getDeclaredFields();
-					LinkedList<BiomeGenBase> linkedlist = new LinkedList<BiomeGenBase>();
-					for(int j = 0; j < afield.length; j++) {
-						Class class1 = afield[j].getType();
-						if((afield[j].getModifiers() & 8) != 0 && class1.isAssignableFrom(BiomeGenBase.class)) {
-							BiomeGenBase biomegenbase = (BiomeGenBase)afield[j].get(null);
-							linkedlist.add(biomegenbase);
-						}
-					}
-					BiomeGenBase[] dominateBiomes = (BiomeGenBase[])linkedlist.toArray(new BiomeGenBase[0]);
-					
-					ModLoader.addSpawn(LMM_EntityLittleMaid.class, cfg_spawnWeight, cfg_minGroupSize, cfg_maxGroupSize, EnumCreatureType.creature, dominateBiomes);
-				} catch (Exception exception) {
-					Debug("Dominate Exception.");
-				}
-			} else {
-				// 通常スポーン設定
-				ModLoader.addSpawn(LMM_EntityLittleMaid.class, cfg_spawnWeight, cfg_minGroupSize, cfg_maxGroupSize, EnumCreatureType.creature);
+			if (cfg_Dominant)
+			{
+				biomeList = BiomeGenBase.getBiomeGenArray();
+			}
+			else
+			{
+				// 通常スポーン設定バイオームは適当
+				biomeList = new BiomeGenBase[]{
+						BiomeGenBase.desert,
+						BiomeGenBase.plains,
+						BiomeGenBase.savanna,
+						BiomeGenBase.mushroomIsland,
+						BiomeGenBase.forest,
+						BiomeGenBase.birchForest,
+						BiomeGenBase.swampland,
+						BiomeGenBase.taiga,
+				};
+			}
+			for(BiomeGenBase biome : biomeList)
+			{
+				EntityRegistry.addSpawn(LMM_EntityLittleMaid.class, cfg_spawnWeight, cfg_minGroupSize, cfg_maxGroupSize, EnumCreatureType.creature, biome);
 			}
 		}
 		
@@ -265,21 +224,10 @@ public class LMM_LittleMaidMobX extends BaseMod {
 			// サウンドパック
 			LMM_SoundManager.loadDefaultSoundPack();
 			LMM_SoundManager.loadSoundPack();
+			LMM_SoundManager.createSoundJson();
 		}
 		
 		// IFFのロード
 		LMM_IFF.loadIFFs();
-	}
-
-	@Override
-	public void serverCustomPayload(NetServerHandler var1, Packet250CustomPayload var2) {
-		// サーバ側の動作
-		LMM_Net.serverCustomPayload(var1, var2);
-	}
-
-	@Override
-	public void clientCustomPayload(NetClientHandler var1, Packet250CustomPayload var2) {
-		// クライアント側の特殊パケット受信動作
-		LMM_Client.clientCustomPayload(var1, var2);
 	}
 }

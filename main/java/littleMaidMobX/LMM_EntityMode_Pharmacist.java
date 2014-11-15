@@ -1,7 +1,6 @@
 package littleMaidMobX;
 
-import littleMaidMobX.mmm.lib.MMM_Helper;
-import littleMaidMobX.mmm.lib.ModLoader;
+import mmmlibx.lib.MMM_Helper;
 import net.minecraft.entity.ai.EntityAITasks;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemPotion;

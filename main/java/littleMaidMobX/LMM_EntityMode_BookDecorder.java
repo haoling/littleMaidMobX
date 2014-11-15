@@ -1,7 +1,7 @@
 package littleMaidMobX;
 
-import littleMaidMobX.mmm.lib.MMM_TextureBoxBase;
-import littleMaidMobX.mmm.lib.MMM_TextureManager;
+import mmmlibx.lib.MMM_TextureBoxBase;
+import mmmlibx.lib.MMM_TextureManager;
 import net.minecraft.entity.ai.EntityAITasks;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;

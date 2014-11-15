@@ -2,7 +2,6 @@ package littleMaidMobX;
 
 import java.util.List;
 
-import littleMaidMobX.mmm.lib.ModLoader;
 import net.minecraft.block.Block;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;

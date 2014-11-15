@@ -1,6 +1,5 @@
 package littleMaidMobX;
 
-import littleMaidMobX.mmm.lib.ModLoader;
 import net.minecraft.entity.ai.EntityAITasks;
 import net.minecraft.entity.item.EntityXPOrb;
 import net.minecraft.entity.player.EntityPlayer;
@@ -263,8 +262,6 @@ public class LMM_EntityMode_Cooking extends LMM_EntityModeBlockBase {
 
 	public void dropExpOrb(ItemStack pItemStack, int pCount) {
 		if (!owner.worldObj.isRemote) {
-			// TODO ★
-//			float var3 = FurnaceRecipes.smelting().getExperience(pItemStack.getItem());
 			float var3 = pItemStack.getItem().getSmeltingExperience(pItemStack);
 			int var4;
 			

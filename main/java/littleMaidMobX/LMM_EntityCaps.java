@@ -3,7 +3,7 @@ package littleMaidMobX;
 import java.util.HashMap;
 import java.util.Map;
 
-import littleMaidMobX.mmm.lib.MMM_EntityCaps;
+import mmmlibx.lib.MMM_EntityCaps;
 import net.minecraft.item.EnumAction;
 import net.minecraft.item.ItemStack;
 

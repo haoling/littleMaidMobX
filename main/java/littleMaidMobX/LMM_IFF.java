@@ -12,7 +12,8 @@ import java.util.Map.Entry;
 import java.util.Random;
 import java.util.TreeMap;
 
-import littleMaidMobX.mmm.lib.MMM_Helper;
+import wrapper.W_Common;
+import mmmlibx.lib.MMM_Helper;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityList;
 import net.minecraft.entity.EntityLivingBase;
@@ -210,7 +211,7 @@ public class LMM_IFF {
 				}
 			}
 		} else if (entity instanceof IEntityOwnable) {
-			String loname = ((IEntityOwnable)entity).getOwnerName();
+			String loname = W_Common.getOwnerName((IEntityOwnable)entity);
 			if (!loname.isEmpty()) {
 				if (loname.contentEquals(pUsername)) {
 					// 自分の

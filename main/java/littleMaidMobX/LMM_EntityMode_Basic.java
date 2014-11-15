@@ -3,8 +3,7 @@ package littleMaidMobX;
 import java.util.ArrayList;
 import java.util.List;
 
-import littleMaidMobX.mmm.lib.MMM_Helper;
-import littleMaidMobX.mmm.lib.ModLoader;
+import mmmlibx.lib.MMM_Helper;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockChest;
 import net.minecraft.entity.Entity;

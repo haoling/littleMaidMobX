@@ -1,6 +1,6 @@
 package littleMaidMobX;
 
-import littleMaidMobX.mmm.lib.MMM_EntityDummy;
+import mmmlibx.lib.MMM_EntityDummy;
 import net.minecraft.block.material.Material;
 import net.minecraft.entity.ai.EntityAIBase;
 import net.minecraft.util.MathHelper;

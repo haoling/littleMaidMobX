@@ -45,7 +45,7 @@ public class LMM_Statics
 	/** 保持経験値、実のところクライアント側では必要ないので要らない(Integer) */
 	protected static final int dataWatch_ExpValue		= 27;
 	
-	/** TODO ★EntityPlayer と EntityTameable で17番がかぶっているため、EntityPlayerを28へ移動。 */
+	/** EntityPlayer と EntityTameable で17番がかぶっているため、EntityPlayer側を28へ移動。 */
 	protected static final int dataWatch_AbsorptionAmount	= 28;
 	
 	

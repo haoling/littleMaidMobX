@@ -1,7 +1,8 @@
 package littleMaidMobX;
 
-import littleMaidMobX.mmm.lib.ITextureEntity;
-import littleMaidMobX.mmm.lib.MMM_GuiTextureSelect;
+import mmmlibx.lib.ITextureEntity;
+import mmmlibx.lib.MMM_GuiTextureSelect;
+import mmmlibx.lib.MMM_TextureManager;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
 
@@ -21,6 +22,7 @@ public class LMM_GuiTextureSelect extends MMM_GuiTextureSelect {
 		switch (par1GuiButton.id) {
 		case 200:
 			if (toServer) {
+				MMM_TextureManager.instance.postSetTexturePack(target, selectColor, target.getTextureBox());
 				if (selectColor != selectPanel.color) {
 					// 色情報の設定
 //					theMaid.maidColor = selectPanel.color | 0x010000 | (selectColor << 8);

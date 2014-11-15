@@ -1,6 +1,6 @@
 entity.LittleMaidX.name=リトルメイドX
-achievement.littleMaid=悟り。
-achievement.littleMaid.desc=メイドさんを入手しました。
+achievement.contract=悟り。
+achievement.contract.desc=メイドさんを入手しました。
 //littleMaidMob.mode.Archer=射手
 //littleMaidMob.mode.Blazingstar=刃鳴散らす者
 littleMaidMob.mode.Wild=野生種

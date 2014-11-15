@@ -85,7 +85,7 @@ public class LMM_ItemSpawnEgg extends ItemMonsterPlacer {
 				d0 = 0.5D;
 			}
 
-			Entity entity = spawnCreature(par3World, par1ItemStack.getItemDamage(), (double)par4 + 0.5D, (double)par5 + d0, (double)par6 + 0.5D);
+			Entity entity = spawnMaid(par3World, par1ItemStack.getItemDamage(), (double)par4 + 0.5D, (double)par5 + d0, (double)par6 + 0.5D);
 
 			if (entity != null)
 			{
@@ -140,7 +140,7 @@ public class LMM_ItemSpawnEgg extends ItemMonsterPlacer {
 
 					if (par2World.getBlock(i, j, k) instanceof BlockLiquid)
 					{
-						Entity entity = spawnCreature(par2World, par1ItemStack.getItemDamage(), (double)i, (double)j, (double)k);
+						Entity entity = spawnMaid(par2World, par1ItemStack.getItemDamage(), (double)i, (double)j, (double)k);
 
 						if (entity != null)
 						{
@@ -162,7 +162,7 @@ public class LMM_ItemSpawnEgg extends ItemMonsterPlacer {
 		}
 	}
 	// spawnableEntitiesのエンティティをスポーンさせるようにItemMonsterPlacerのspawnCreatureを改変
-	public static Entity spawnCreature(World par0World, int par1, double par2, double par4, double par6)
+	public static Entity spawnMaid(World par0World, int par1, double par2, double par4, double par6)
 	{
 //		Class c = spawnableEntities[par1];
 		Entity entity = null;

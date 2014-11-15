@@ -1,20 +1,22 @@
 package littleMaidMobX;
 
-import static littleMaidMobX.LMM_Statics.*;
-
-import java.util.Map;
-
-import cpw.mods.fml.client.registry.RenderingRegistry;
-import littleMaidMobX.mmm.lib.MMM_Helper;
-import littleMaidMobX.mmm.lib.ModLoader;
-import littleMaidMobX.mmm.lib.NetClientHandler;
-import littleMaidMobX.mmm.lib.Packet250CustomPayload;
+import static littleMaidMobX.LMM_Statics.LMN_Client_PlaySound;
+import static littleMaidMobX.LMM_Statics.LMN_Client_SetIFFValue;
+import static littleMaidMobX.LMM_Statics.LMN_Client_SwingArm;
+import mmmlibx.lib.MMM_EntityDummy;
+import mmmlibx.lib.MMM_EntitySelect;
+import mmmlibx.lib.MMM_Helper;
+import mmmlibx.lib.MMM_RenderDummy;
+import mmmlibx.lib.MMM_RenderItem;
+import mmmlibx.lib.multiModel.model.mc162.RenderModelMulti;
 import net.minecraft.client.entity.EntityClientPlayerMP;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.client.particle.EntityCrit2FX;
 import net.minecraft.client.particle.EntityPickupFX;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.item.EntityItem;
+import network.W_Message;
+import cpw.mods.fml.client.registry.RenderingRegistry;
 
 /**
  * クライアント専用処理。
@@ -24,14 +26,11 @@ import net.minecraft.entity.player.EntityPlayer;
 public class LMM_Client {
 
 	public static void init() {
-		RenderingRegistry.registerEntityRenderingHandler(LMM_EntityLittleMaid.class, new LMM_RenderLittleMaid(0.3F));
+		RenderingRegistry.registerEntityRenderingHandler(LMM_EntityLittleMaid.class,new LMM_RenderLittleMaid(0.3F));
+		RenderingRegistry.registerEntityRenderingHandler(MMM_EntitySelect.class,	new RenderModelMulti(0.0F));
+		RenderingRegistry.registerEntityRenderingHandler(MMM_EntityDummy.class,		new MMM_RenderDummy());
+// TODO ★		RenderingRegistry.registerEntityRenderingHandler(EntityItem.class,			new MMM_RenderItem());
 	}
-
-	/*
-	public static void addRenderer(Map map) {
-		map.put(LMM_EntityLittleMaid.class, new LMM_RenderLittleMaid(0.3F));
-	}
-	*/
 
 	public static GuiContainer getContainerGUI(EntityClientPlayerMP var1, int var2,
 			int var3, int var4, int var5) {
@@ -66,7 +65,7 @@ public class LMM_Client {
 	
 // Network
 
-	public static void clientCustomPayload(NetClientHandler var1, Packet250CustomPayload var2) {
+	public static void clientCustomPayload(W_Message var2) {
 		// クライアント側の特殊パケット受信動作
 		byte lmode = var2.data[0];
 		int leid = 0;
@@ -106,9 +105,10 @@ public class LMM_Client {
 		}
 	}
 
+	/* 呼び出し箇所なし
 	public static void setAchievement() {
-// TODO ★MinecraftクラスからstatFileWriterが消えてる
+// MinecraftクラスからstatFileWriterが消えてる
 //		MMM_Helper.mc.statFileWriter.readStat(mod_LMM_littleMaidMob.ac_Contract, 1);
 	}
-
+	*/
 }

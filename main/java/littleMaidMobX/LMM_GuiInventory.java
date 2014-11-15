@@ -4,8 +4,8 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.Random;
 
-import littleMaidMobX.mmm.lib.Client;
-import littleMaidMobX.mmm.lib.gui.GuiButtonNextPage;
+import mmmlibx.lib.Client;
+import mmmlibx.lib.gui.GuiButtonNextPage;
 import net.minecraft.block.material.Material;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.inventory.GuiContainer;
@@ -228,7 +228,7 @@ public class LMM_GuiInventory extends GuiContainer {
 		IAttributeInstance var10 = entitylittlemaid.getEntityAttribute(SharedMonsterAttributes.maxHealth);
 		int var13 = par2 - 39;
 		float var14 = (float) var10.getAttributeValue();
-		float var15 = entitylittlemaid.func_110139_bj();
+		float var15 = entitylittlemaid.getAbsorptionAmount();
 		int var16 = MathHelper.ceiling_float_int((var14 + var15) / 2.0F / 10.0F);
 		int var17 = Math.max(10 - (var16 - 2), 3);
 		float var19 = var15;

@@ -1,8 +1,8 @@
 package littleMaidMobX;
 
-import littleMaidMobX.mmm.lib.Client;
-import littleMaidMobX.mmm.lib.MMM_GuiMobSelect;
-import littleMaidMobX.mmm.lib.MMM_Helper;
+import mmmlibx.lib.Client;
+import mmmlibx.lib.MMM_GuiMobSelect;
+import mmmlibx.lib.MMM_Helper;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.entity.Entity;
@@ -131,7 +131,9 @@ public class LMM_GuiIFF extends MMM_GuiMobSelect {
 			} else {
 				LMM_IFF.setIFFValue(null, pName, tt);
 			}
-// TODO ★ ただのクリック音			mc.sndManager.playSoundFX("random.click", 1.0F, 1.0F);
+			
+			Entity player = mc.thePlayer;
+			pEntity.worldObj.playSound(player.posX+0.5, player.posY+0.5, player.posZ+0.5, "random.click", 1, 1, false);
 		}
 	}
 

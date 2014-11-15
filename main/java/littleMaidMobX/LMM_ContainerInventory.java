@@ -12,9 +12,9 @@ import cpw.mods.fml.relauncher.SideOnly;
 
 public class LMM_ContainerInventory extends ContainerPlayer {
 	
-	protected LMM_InventoryLittleMaid littlemaidInventory;
-	protected int numRows;
-	protected LMM_EntityLittleMaid owner;
+	protected final LMM_InventoryLittleMaid littlemaidInventory;
+	protected final int numRows;
+	protected final LMM_EntityLittleMaid owner;
 
 
 	public LMM_ContainerInventory(IInventory iinventory, LMM_EntityLittleMaid pEntity) {
@@ -49,9 +49,38 @@ public class LMM_ContainerInventory extends ContainerPlayer {
 		}
 		
 		for (int j = 0; j < 3; j++) {
-			int j1 = j + 1;
+//			int j1 = j + 1;
 //			addSlotToContainer(new SlotArmor(this, linventory, linventory.getSizeInventory() - 2 - j, 8, 8 + j * 18, j1));
-// TODO ★
+
+			final int armorIndex = 1 + j; // ヘルメットはない
+			this.addSlotToContainer(new Slot(linventory, linventory.getSizeInventory() - 2 - j, 8, 8 + j * 18)
+			{
+				private static final String __OBFID = "CL_00001755";
+				/**
+				 * Returns the maximum stack size for a given slot (usually the same as getInventoryStackLimit(), but 1
+				 * in the case of armor slots)
+				 */
+				public int getSlotStackLimit()
+				{
+					return 1;
+				}
+				/**
+				 * Check if the stack is a valid item for this slot. Always true beside for the armor slots.
+				 */
+				public boolean isItemValid(ItemStack par1ItemStack)
+				{
+					if (par1ItemStack == null) return false;
+					return par1ItemStack.getItem().isValidArmor(par1ItemStack, armorIndex, owner);
+				}
+				/**
+				 * Returns the icon index on items.png that is used as background image of the slot.
+				 */
+				@SideOnly(Side.CLIENT)
+				public IIcon getBackgroundIconIndex()
+				{
+					return ItemArmor.func_94602_b(armorIndex);
+				}
+			});
 		}
 	}
 

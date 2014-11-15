@@ -218,10 +218,10 @@ public class LMM_SwingStatus {
 		
 		if (itemInUse.getItemUseAction() == EnumAction.eat) {
 			for (int var3 = 0; var3 < par2; ++var3) {
-				Vec3 var4 = pEntity.worldObj.getWorldVec3Pool().getVecFromPool(((double)rand.nextFloat() - 0.5D) * 0.1D, Math.random() * 0.1D + 0.1D, 0.0D);
+				Vec3 var4 = Vec3.createVectorHelper(((double)rand.nextFloat() - 0.5D) * 0.1D, Math.random() * 0.1D + 0.1D, 0.0D);
 				var4.rotateAroundX(-pEntity.rotationPitch * (float)Math.PI / 180.0F);
 				var4.rotateAroundY(-pEntity.rotationYaw * (float)Math.PI / 180.0F);
-				Vec3 var5 = pEntity.worldObj.getWorldVec3Pool().getVecFromPool(((double)rand.nextFloat() - 0.5D) * 0.3D, (double)(-rand.nextFloat()) * 0.6D - 0.3D, 0.6D);
+				Vec3 var5 = Vec3.createVectorHelper(((double)rand.nextFloat() - 0.5D) * 0.3D, (double)(-rand.nextFloat()) * 0.6D - 0.3D, 0.6D);
 				var5.rotateAroundX(-pEntity.rotationPitch * (float)Math.PI / 180.0F);
 				var5.rotateAroundY(-pEntity.rotationYaw * (float)Math.PI / 180.0F);
 				var5 = var5.addVector(pEntity.posX, pEntity.posY + (double)pEntity.getEyeHeight(), pEntity.posZ);

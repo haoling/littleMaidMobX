@@ -9,11 +9,12 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import littleMaidMobX.mmm.lib.FileManager;
+import mmmlibx.lib.FileManager;
 
 public class LMM_SoundManager {
 	
@@ -202,7 +203,7 @@ public class LMM_SoundManager {
 				return soundsDefault.get(enumsound.index);
 			}
 		}
-		return s;
+		return LMM_LittleMaidMobX.DOMAIN + ":" + s;
 	}
 
 	public static void rebuildSoundPack() {
@@ -418,4 +419,85 @@ public class LMM_SoundManager {
 		buffer.newLine();
 	}
 
+	public static void createSoundJson()
+	{
+		if(!sounddir.exists() || !sounddir.isDirectory())
+		{
+			return;
+		}
+		
+		File file1 = new File(sounddir.getParent(), "sounds.json");
+		try {
+			BufferedWriter bwriter = new BufferedWriter(new FileWriter(file1));
+			
+			String str = searchSoundAndWriteFile("", sounddir, "");
+			bwriter.write("{\n" + str + "\n}\n");
+			bwriter.newLine();
+			
+			bwriter.close();
+			LMM_LittleMaidMobX.Debug("Success create Sounds.json(%s).", file1.getAbsolutePath());
+		} catch (IOException e) {
+			LMM_LittleMaidMobX.Debug("Failed create Sounds.json(%s).", file1.getAbsolutePath());
+			e.printStackTrace();
+		}
+	}
+
+	// 再帰的にフォルダを捜査し、音声ファイルをファイル出力する
+	/* 出力例
+		{
+		"mmm.akari":{"category":"master","sounds":["mmm/akari1","mmm/akari2","mmm/akari3"]},
+		"mmm.attack":{"category":"master","sounds":["mmm/attack01","mmm/attack02","mmm/attack03"]}
+		}
+	*/
+	public static String searchSoundAndWriteFile(String output, File dir, String path) throws IOException
+	{
+		for(File file : dir.listFiles())
+		{
+			if(file.isDirectory())
+			{
+				output = output + searchSoundAndWriteFile(output, file, path + file.getName() +".");
+			}
+		}
+
+		Map<String, List<String>> map = new LinkedHashMap<String, List<String>>();
+		for(File file : dir.listFiles())
+		{
+			if(file.isFile() && file.getName().endsWith(".ogg"))
+			{
+				final String fileName  = path + file.getName().substring(0, file.getName().length()-4); // 拡張子削除
+				final String soundName = fileName.replaceAll("\\d+$", ""); // ファイルの終わりの数値部分を削除
+				final String name = fileName.replace(".", "/");
+				if(!map.containsKey(soundName))
+				{
+					map.put(soundName, new ArrayList<String>());
+				}
+				map.get(soundName).add(name);
+			}
+		}
+		for(String key : map.keySet())
+		{
+			String s = "";
+			for(String name : map.get(key))
+			{
+				if(s.isEmpty())
+				{
+					s = "\""+key+"\":{\"category\":\"master\",\"sounds\":[";
+				}
+				else
+				{
+					s = s + ",";
+				}
+				s = s + "\"" + name + "\"";
+			}
+			s = s + "]}";
+
+			if(!output.isEmpty())
+			{
+				output = output + ",\n";
+			}
+			output = output + s;
+		}
+		
+		return output;
+	}
 }

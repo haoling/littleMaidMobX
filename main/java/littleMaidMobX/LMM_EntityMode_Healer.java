@@ -3,8 +3,7 @@ package littleMaidMobX;
 import java.util.Iterator;
 import java.util.List;
 
-import littleMaidMobX.mmm.lib.MMM_Helper;
-import littleMaidMobX.mmm.lib.ModLoader;
+import mmmlibx.lib.MMM_Helper;
 import net.minecraft.entity.ai.EntityAIHurtByTarget;
 import net.minecraft.entity.ai.EntityAITasks;
 import net.minecraft.entity.player.EntityPlayer;

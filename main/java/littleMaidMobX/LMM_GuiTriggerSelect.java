@@ -2,8 +2,8 @@ package littleMaidMobX;
 
 import java.util.List;
 
-import littleMaidMobX.mmm.lib.Client;
-import littleMaidMobX.mmm.lib.MMM_Helper;
+import mmmlibx.lib.Client;
+import mmmlibx.lib.MMM_Helper;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.entity.player.EntityPlayer;

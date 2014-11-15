@@ -3,7 +3,7 @@ package littleMaidMobX;
 import java.lang.reflect.Field;
 import java.util.List;
 
-import littleMaidMobX.mmm.lib.MMM_Helper;
+import mmmlibx.lib.MMM_Helper;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityCreature;
 import net.minecraft.entity.EntityLivingBase;

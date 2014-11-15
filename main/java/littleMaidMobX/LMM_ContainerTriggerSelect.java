@@ -3,8 +3,8 @@ package littleMaidMobX;
 import java.util.ArrayList;
 import java.util.List;
 
-import littleMaidMobX.mmm.lib.ContainerCreative;
-import littleMaidMobX.mmm.lib.MMM_Helper;
+import mmmlibx.lib.ContainerCreative;
+import mmmlibx.lib.MMM_Helper;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;

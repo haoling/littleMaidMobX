@@ -32,17 +32,18 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.UUID;
 
-import littleMaidMobX.mmm.lib.ITextureEntity;
-import littleMaidMobX.mmm.lib.MMMLib;
-import littleMaidMobX.mmm.lib.MMM_Counter;
-import littleMaidMobX.mmm.lib.MMM_Helper;
-import littleMaidMobX.mmm.lib.MMM_TextureBox;
-import littleMaidMobX.mmm.lib.MMM_TextureBoxBase;
-import littleMaidMobX.mmm.lib.MMM_TextureBoxServer;
-import littleMaidMobX.mmm.lib.MMM_TextureData;
-import littleMaidMobX.mmm.lib.MMM_TextureManager;
-import littleMaidMobX.mmm.lib.multiModel.model.mc162.EquippedStabilizer;
-import littleMaidMobX.mmm.lib.multiModel.model.mc162.IModelCaps;
+import wrapper.W_Common;
+import mmmlibx.lib.ITextureEntity;
+import mmmlibx.lib.MMMLib;
+import mmmlibx.lib.MMM_Counter;
+import mmmlibx.lib.MMM_Helper;
+import mmmlibx.lib.MMM_TextureBox;
+import mmmlibx.lib.MMM_TextureBoxBase;
+import mmmlibx.lib.MMM_TextureBoxServer;
+import mmmlibx.lib.MMM_TextureData;
+import mmmlibx.lib.MMM_TextureManager;
+import mmmlibx.lib.multiModel.model.mc162.EquippedStabilizer;
+import mmmlibx.lib.multiModel.model.mc162.IModelCaps;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockFlower;
 import net.minecraft.block.BlockLeaves;
@@ -84,6 +85,7 @@ import net.minecraft.item.ItemSkull;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
+import net.minecraft.network.play.server.S04PacketEntityEquipment;
 import net.minecraft.network.play.server.S1DPacketEntityEffect;
 import net.minecraft.network.play.server.S1EPacketRemoveEntityEffect;
 import net.minecraft.pathfinding.PathEntity;
@@ -99,6 +101,7 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.Vec3;
 import net.minecraft.world.EnumDifficulty;
 import net.minecraft.world.World;
+import net.minecraft.world.WorldServer;
 import net.minecraft.world.biome.BiomeGenBase;
 import cpw.mods.fml.common.ObfuscationReflectionHelper;
  
@@ -687,9 +690,16 @@ public class LMM_EntityLittleMaid extends EntityTameable implements ITextureEnti
 		if (worldObj.isRemote) {
 			// Client
 			String s = LMM_SoundManager.getSoundValue(enumsound, textureData.getTextureName(0), textureData.getColor());
+			if(!s.isEmpty() && !s.startsWith("minecraft:"))
+			{
+				s = LMM_LittleMaidMobX.DOMAIN + ":" + s;
+			}
 			LMM_LittleMaidMobX.Debug(String.format("id:%d, se:%04x-%s (%s)", getEntityId(), enumsound.index, enumsound.name(), s));
-			float lpitch = LMM_LittleMaidMobX.cfg_VoiceDistortion ? (rand.nextFloat() * 0.2F) + 0.95F : 1.0F;
-			worldObj.playSound(posX, posY, posZ, s, getSoundVolume(), lpitch, false);
+			if(!s.isEmpty())
+			{
+				float lpitch = LMM_LittleMaidMobX.cfg_VoiceDistortion ? (rand.nextFloat() * 0.2F) + 0.95F : 1.0F;
+				worldObj.playSound(posX, posY, posZ, s, getSoundVolume(), lpitch, false);
+			}
 		}
 	}
 
@@ -824,7 +834,7 @@ public class LMM_EntityLittleMaid extends EntityTameable implements ITextureEnti
 	}
 
 	// ポーション効果のエフェクト
-	public void func_110149_m(float par1) {
+	public void setAbsorptionAmount(float par1) {
 		// AbsorptionAmount
 		if (par1 < 0.0F) {
 			par1 = 0.0F;
@@ -832,7 +842,7 @@ public class LMM_EntityLittleMaid extends EntityTameable implements ITextureEnti
 		
 		this.getDataWatcher().updateObject(dataWatch_Absoption, Float.valueOf(par1));
 	}
-	public float func_110139_bj() {
+	public float getAbsorptionAmount() {
 		return this.getDataWatcher().getWatchableObjectFloat(dataWatch_Absoption);
 	}
 
@@ -995,7 +1005,7 @@ public class LMM_EntityLittleMaid extends EntityTameable implements ITextureEnti
 			// 旧版からの継承
 			String s = par1nbtTagCompound.getString("Master");
 			if(s.length() > 0) {
-				setOwner(s);
+				W_Common.setOwner(this, s);
 				setContract(true);
 			}
 			NBTTagList nbttaglist = par1nbtTagCompound.getTagList("Inventory", 10);
@@ -1063,20 +1073,9 @@ public class LMM_EntityLittleMaid extends EntityTameable implements ITextureEnti
 				setMaidMode(0x0000);	// Wild
 			}
 //			setMaidMode((b & 0xf0) >> 4);
-			int lhx = 0;
-			int lhy = 0;
-			int lhz = 0;
-			NBTTagList nbttaglist1 = par1nbtTagCompound.getTagList("HomePosI", 3);
-// TODO ★分からん			if (nbttaglist1.tagCount() > 0) {
-//				lhx = ((NBTTagInt)nbttaglist1.tagAt(0)).data;
-//				lhy = ((NBTTagInt)nbttaglist1.tagAt(1)).data;
-//				lhz = ((NBTTagInt)nbttaglist1.tagAt(2)).data;
-//			} else
-			{
-				lhx = MathHelper.floor_double(posX);
-				lhy = MathHelper.floor_double(posY);
-				lhz = MathHelper.floor_double(posZ);
-			}
+			int lhx = MathHelper.floor_double(posX);
+			int lhy = MathHelper.floor_double(posY);
+			int lhz = MathHelper.floor_double(posZ);;
 //			func_110172_bL().set(lhx, lhy, lhz);
 			getHomePosition().set(lhx, lhy, lhz);
 			long lcl = par1nbtTagCompound.getLong("Limit");
@@ -1943,7 +1942,7 @@ public class LMM_EntityLittleMaid extends EntityTameable implements ITextureEnti
 					}
 					// インベントリの中身が変わった
 					if (lchange || maidInventory.isChanged(li)) {
-//	TODO ★					((WorldServer)worldObj).getEntityTracker().sendPacketToAllPlayersTrackingEntity(this, new Packet5PlayerInventory(this.getEntityId(), (li | lselect << 8) + 5, maidInventory.getStackInSlot(li)));
+						((WorldServer)worldObj).getEntityTracker().func_151247_a(this, new S04PacketEntityEquipment(this.getEntityId(), (li | lselect << 8) + 5, maidInventory.getStackInSlot(li)));
 						maidInventory.resetChanged(li);
 						LMM_LittleMaidMobX.Debug(String.format("ID:%d-%s - Slot(%x:%d-%d,%d) Update.", getEntityId(), worldObj.isRemote ? "Client" : "Server", lselect, li, mstatSwingStatus[0].index, mstatSwingStatus[1].index));
 					}
@@ -2347,11 +2346,8 @@ public class LMM_EntityLittleMaid extends EntityTameable implements ITextureEnti
 	 */
 	public void displayGUIMaidInventory(EntityPlayer pEntityPlayer) {
 		if (!worldObj.isRemote) {
-			// server
-//			Container lcontainer = new LMM_ContainerInventory(pEntityPlayer.inventory, this);
-//			ModLoader.serverOpenWindow((EntityPlayerMP)pEntityPlayer, lcontainer, LMM_LittleMaidMobX.containerID, getEntityId(), 0, 0);
 			LMM_GuiCommonHandler.maidServer = this;
-			pEntityPlayer.openGui(LMM_LittleMaidMobX.instance, 0, this.worldObj,
+			pEntityPlayer.openGui(LMM_LittleMaidMobX.instance, LMM_GuiCommonHandler.GUI_ID_INVVENTORY, this.worldObj,
 					(int)this.posX, (int)this.posY, (int)this.posZ);
 		}
 		else
@@ -2481,7 +2477,7 @@ public class LMM_EntityLittleMaid extends EntityTameable implements ITextureEnti
 								MMM_Helper.decPlayerInventory(par1EntityPlayer, -1, 1);
 								if (worldObj.isRemote) {
 									par1EntityPlayer.openGui(LMM_LittleMaidMobX.instance,
-											1,
+											LMM_GuiCommonHandler.GUI_ID_IFF,
 											this.worldObj,
 											(int)this.posX,
 											(int)this.posY,
@@ -2550,7 +2546,7 @@ public class LMM_EntityLittleMaid extends EntityTameable implements ITextureEnti
 						}
 					}
 					// メイドインベントリ
-					setOwner(MMM_Helper.getPlayerName(par1EntityPlayer));
+					W_Common.setOwner(this, MMM_Helper.getPlayerName(par1EntityPlayer));
 					getNavigator().clearPathEntity();
 					isJumping = false;
 					displayGUIMaidInventory(par1EntityPlayer);
@@ -2569,7 +2565,7 @@ public class LMM_EntityLittleMaid extends EntityTameable implements ITextureEnti
 								par1EntityPlayer.triggerAchievement(LMM_LittleMaidMobX.ac_Contract);
 							}
 							setContract(true);
-							setOwner(MMM_Helper.getPlayerName(par1EntityPlayer));
+							W_Common.setOwner(this, MMM_Helper.getPlayerName(par1EntityPlayer));
 							setHealth(20);
 							setMaidMode("Escorter");
 							setMaidWait(false);
@@ -2671,7 +2667,7 @@ public class LMM_EntityLittleMaid extends EntityTameable implements ITextureEnti
 		return getMaidMasterEntity();
 	}
 	public String getMaidMaster() {
-		return getOwnerName();
+		return W_Common.getOwnerName(this);
 	}
 
 	public EntityPlayer getMaidMasterEntity() {

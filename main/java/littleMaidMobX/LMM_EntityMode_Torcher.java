@@ -1,6 +1,5 @@
 package littleMaidMobX;
 
-import littleMaidMobX.mmm.lib.ModLoader;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.material.MaterialLiquid;

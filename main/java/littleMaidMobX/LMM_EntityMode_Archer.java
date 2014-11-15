@@ -2,7 +2,6 @@ package littleMaidMobX;
 
 import java.util.List;
 
-import littleMaidMobX.mmm.lib.ModLoader;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.ai.EntityAITasks;
@@ -173,7 +172,7 @@ public class LMM_EntityMode_Archer extends LMM_EntityModeBase {
 					int lz = (int)owner.posZ;
 					if (lworld.getBlock(lx, ly, lz) == Blocks.air || lworld.getBlock(lx, ly, lz).getMaterial().getCanBurn()) {
 						lworld.playSoundEffect((double)lx + 0.5D, (double)ly + 0.5D, (double)lz + 0.5D, "fire.ignite", 1.0F, owner.getRNG().nextFloat() * 0.4F + 0.8F);
-// TODO ★後回し						lworld.setBlockMetadataWithNotify(lx, ly, lz, Blocks.fire.blockID, 0);
+// TODO ★何したいか不明						lworld.setBlockMetadataWithNotify(lx, ly, lz, Blocks.fire.blockID, 0);
 					}
 				}
 			}

@@ -1,6 +1,5 @@
 package littleMaidMobX;
 
-import littleMaidMobX.mmm.lib.ModLoader;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.ai.EntityAILookIdle;

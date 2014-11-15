@@ -4,11 +4,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map.Entry;
 
-import littleMaidMobX.mmm.lib.MMM_TextureBox;
-import littleMaidMobX.mmm.lib.MMM_TextureBoxServer;
-import littleMaidMobX.mmm.lib.MMM_TextureManager;
-import littleMaidMobX.mmm.lib.ModLoader;
+import wrapper.W_Common;
+import mmmlibx.lib.MMM_TextureBox;
+import mmmlibx.lib.MMM_TextureBoxServer;
+import mmmlibx.lib.MMM_TextureManager;
 import net.minecraft.command.CommandBase;
+import net.minecraft.command.CommandTime;
 import net.minecraft.command.ICommand;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.command.WrongUsageException;
@@ -30,7 +31,7 @@ public class LMM_EntityMode_Test extends LMM_EntityModeBase implements ICommand 
 	
 	@Override
 	public void init() {
-		ModLoader.addCommand(this);
+//		ModLoader.addCommand(this);
 	}
 
 	@Override
@@ -122,11 +123,13 @@ public class LMM_EntityMode_Test extends LMM_EntityModeBase implements ICommand 
 			switch (Integer.valueOf(var2[0])) {
 			case 0:
 				isEnable = false;
-				CommandBase.notifyAdmins(var1, 0, "LMM TestMessage Disable", new Object[] {});
+				// TODO ★ p_152374_1_ はコマンドの実行権限のチェック用なので似たようなコマンドならなんでも良い
+				W_Common.notifyAdmins(var1, new CommandTime(), 0, "LMM TestMessage Disable", new Object[] {});
 				break;
 			case 1:
 				isEnable = true;
-				CommandBase.notifyAdmins(var1, 0, "LMM TestMessage Enable", new Object[] {});
+				// TODO ★ p_152374_1_ はコマンドの実行権限のチェック用なので似たようなコマンドならなんでも良い
+				W_Common.notifyAdmins(var1, new CommandTime(), 0, "LMM TestMessage Enable", new Object[] {});
 				break;
 			case 2:
 				// textureIndex

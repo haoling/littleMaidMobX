@@ -3,8 +3,8 @@ package littleMaidMobX;
 import java.util.ArrayList;
 import java.util.List;
 
-import littleMaidMobX.mmm.lib.FileManager;
-import littleMaidMobX.mmm.lib.MMM_ManagerBase;
+import mmmlibx.lib.FileManager;
+import mmmlibx.lib.MMM_ManagerBase;
 
 public class LMM_EntityModeManager extends MMM_ManagerBase {
 
