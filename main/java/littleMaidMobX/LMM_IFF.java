@@ -12,7 +12,6 @@ import java.util.Map.Entry;
 import java.util.Random;
 import java.util.TreeMap;
 
-import wrapper.W_Common;
 import mmmlibx.lib.MMM_Helper;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityList;
@@ -21,7 +20,9 @@ import net.minecraft.entity.IEntityOwnable;
 import net.minecraft.entity.monster.IMob;
 import net.minecraft.entity.passive.EntityOcelot;
 import net.minecraft.entity.passive.EntityTameable;
+import net.minecraft.item.Item;
 import net.minecraft.server.MinecraftServer;
+import wrapper.W_Common;
 
 /**
  * IFFを管理するためのクラス、ほぼマルチ用。
@@ -313,8 +314,8 @@ public class LMM_IFF {
 				BufferedWriter bw = new BufferedWriter(fw);
 				
 				// トリガーアイテムのリスト
-				for (Entry<Integer, List<Integer>> le : LMM_TriggerSelect
-						.getUserTrigger(pUsername).entrySet()) {
+				for (Entry<Integer, List<Item>> le : LMM_TriggerSelect.getUserTrigger(pUsername).entrySet())
+				{
 					StringBuilder sb = new StringBuilder();
 					sb.append("triggerWeapon")
 							.append(LMM_TriggerSelect.selector.get(le.getKey()))

@@ -17,11 +17,11 @@ import net.minecraft.item.ItemStack;
 public class LMM_TriggerSelect {
 
 	public static List<String> selector = new ArrayList<String>();
-	public static Map<String, Map<Integer, List<Integer>>> usersTrigger = new HashMap<String, Map<Integer,List<Integer>>>();
-	public static Map<Integer, List<Integer>> defaultTrigger = new HashMap<Integer,List<Integer>>();
+	public static Map<String, Map<Integer, List<Item>>> usersTrigger = new HashMap<String, Map<Integer,List<Item>>>();
+	public static Map<Integer, List<Item>> defaultTrigger = new HashMap<Integer,List<Item>>();
 
 
-	public static Map<Integer, List<Integer>> getUserTrigger(String pUsername) {
+	public static Map<Integer, List<Item>> getUserTrigger(String pUsername) {
 		if (pUsername == null) {
 			return defaultTrigger;
 		}
@@ -35,7 +35,7 @@ public class LMM_TriggerSelect {
 				// 名称がブランクの時はデフォルトのものへリンク。
 				usersTrigger.put(pUsername, defaultTrigger);
 			} else {
-				Map<Integer, List<Integer>> lmap = new HashMap<Integer, List<Integer>>();
+				Map<Integer, List<Item>> lmap = new HashMap<Integer, List<Item>>();
 				lmap.putAll(defaultTrigger);
 				usersTrigger.put(pUsername, lmap);
 			}
@@ -44,17 +44,17 @@ public class LMM_TriggerSelect {
 		return usersTrigger.get(pUsername);
 	}
 
-	public static List<Integer> getuserTriggerList(String pUsername, String pSelector) {
+	public static List<Item> getuserTriggerList(String pUsername, String pSelector) {
 		if (!selector.contains(pSelector)) {
 			selector.add(pSelector);
 		}
 		int lindex = selector.indexOf(pSelector);
-		Map<Integer, List<Integer>> lmap = getUserTrigger(pUsername);
-		List<Integer> llist;
+		Map<Integer, List<Item>> lmap = getUserTrigger(pUsername);
+		List<Item> llist;
 		if (lmap.containsKey(lindex)) {
 			llist = lmap.get(lindex);
 		} else {
-			llist = new ArrayList<Integer>();
+			llist = new ArrayList<Item>();
 			lmap.put(lindex, llist);
 		}
 		return llist;
@@ -66,7 +66,7 @@ public class LMM_TriggerSelect {
 	 */
 	public static void appendTriggerItem(String pUsername, String pSelector, String pIndexstr) {
 		// トリガーアイテムの追加
-// TODO ★		appendWeaponsIndex(pIndexstr, getuserTriggerList(pUsername, pSelector));
+		appendWeaponsIndex(pIndexstr, getuserTriggerList(pUsername, pSelector));
 	}
 
 	/**

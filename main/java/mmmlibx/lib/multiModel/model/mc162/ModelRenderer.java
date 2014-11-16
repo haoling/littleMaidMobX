@@ -1,6 +1,9 @@
 package mmmlibx.lib.multiModel.model.mc162;
 
-import static mmmlibx.lib.multiModel.model.mc162.IModelCaps.*;
+import static mmmlibx.lib.multiModel.model.mc162.IModelCaps.caps_Actions;
+import static mmmlibx.lib.multiModel.model.mc162.IModelCaps.caps_Entity;
+import static mmmlibx.lib.multiModel.model.mc162.IModelCaps.caps_HeadMount;
+import static mmmlibx.lib.multiModel.model.mc162.IModelCaps.caps_Items;
 
 import java.lang.reflect.Constructor;
 import java.nio.FloatBuffer;
@@ -8,18 +11,23 @@ import java.util.ArrayList;
 import java.util.List;
 
 import net.minecraft.block.Block;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.model.TextureOffset;
 import net.minecraft.client.renderer.GLAllocation;
+import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.client.renderer.RenderBlocks;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.entity.Render;
 import net.minecraft.client.renderer.entity.RenderManager;
+import net.minecraft.client.renderer.texture.TextureManager;
 import net.minecraft.client.renderer.tileentity.TileEntitySkullRenderer;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.item.EnumAction;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemBow;
+import net.minecraft.item.ItemCloth;
+import net.minecraft.item.ItemDoublePlant;
 import net.minecraft.item.ItemSkull;
 import net.minecraft.item.ItemStack;
 
@@ -88,6 +96,7 @@ public class ModelRenderer {
 	public FloatBuffer matrix;
 	public boolean isInvertX;
 
+	private RenderBlocks renderBlocksIr = new RenderBlocks();
 
 
 
@@ -117,6 +126,8 @@ public class ModelRenderer {
 		scaleZ = 1.0F;
 		
 		pearent = null;
+		
+//		renderBlocksIr.useInventoryTint = false;
 	}
 
 	public ModelRenderer(ModelBase pModelBase, int px, int py) {
@@ -466,17 +477,20 @@ public class ModelRenderer {
 //			pRender.loadTexture("/terrain.png");
 			GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
 
-//			int var4 = pEntityLiving.getBrightnessForRender(0.0F);
-//			int var5 = var4 % 65536;
-//			int var6 = var4 / 65536;
-//			OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, (float)var5 / 1.0F, (float)var6 / 1.0F);
+			int var4 = pEntityLiving.getBrightnessForRender(0.0F);
+			int var5 = var4 % 65536;
+			int var6 = var4 / 65536;
+			OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, (float)var5 / 1.0F, (float)var6 / 1.0F);
 
 			
 			GL11.glEnable(GL11.GL_CULL_FACE);
 //			pRender.renderBlocks.renderBlockAsItem(
 //					Block.blocksList[itemstack.itemID],
 //					itemstack.getItemDamage(), 1.0F);
-			RenderManager.instance.itemRenderer.renderItem(pEntityLiving, itemstack, 0);
+
+// 2Dのアイテムとして描画されてしまうため	RenderManager.instance.itemRenderer.renderItem(pEntityLiving, itemstack, 0);
+			renderBlock(itemstack);
+
 			GL11.glDisable(GL11.GL_CULL_FACE);
 		} else {
 			// アイテムに色付け
@@ -491,6 +505,40 @@ public class ModelRenderer {
 			}
 		}
 		
+		GL11.glPopMatrix();
+	}
+	
+	private void renderBlock(ItemStack par2ItemStack)
+	{
+		GL11.glPushMatrix();
+		TextureManager texturemanager = Minecraft.getMinecraft().renderEngine;
+		Item item = par2ItemStack.getItem();
+		Block block = Block.getBlockFromItem(item);
+
+		if (par2ItemStack.getItemSpriteNumber() == 0 && item instanceof ItemBlock)// && RenderBlocks.renderItemIn3d(block.getRenderType()))
+		{
+			texturemanager.bindTexture(texturemanager.getResourceLocation(0));
+
+			GL11.glDisable(GL11.GL_LIGHTING);
+			if (item instanceof ItemCloth)
+			{
+				GL11.glEnable(GL11.GL_BLEND);
+				GL11.glDepthMask(false);
+				OpenGlHelper.glBlendFunc(770, 771, 1, 0);
+				
+				GL11.glAlphaFunc(GL11.GL_GREATER, 0.001F);
+				
+				this.renderBlocksIr.renderBlockAsItem(block, par2ItemStack.getItemDamage(), 1.0F);
+				GL11.glDepthMask(true);
+				GL11.glDisable(GL11.GL_BLEND);
+			}
+			else
+			{
+				this.renderBlocksIr.renderBlockAsItem(block, par2ItemStack.getItemDamage(), 1.0F);
+			}
+			GL11.glEnable(GL11.GL_LIGHTING);
+		}
+
 		GL11.glPopMatrix();
 	}
 

@@ -23,48 +23,13 @@ import net.minecraft.world.World;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
-public class LMM_ItemSpawnEgg extends ItemMonsterPlacer {
-
-	public final int primaryColor;
-	public final int secondaryColor;
-
-	/* このスポーンエッグから生成されるエンティティのリスト
-	public static Class[] spawnableEntities = {
-			LMM_EntityLittleMaid.class,
-	};
-	*/
-
-	public LMM_ItemSpawnEgg(int par1, int par2)
+public class LMM_ItemSpawnEgg extends Item
+{
+	public LMM_ItemSpawnEgg()
 	{
 		this.setHasSubtypes(true);
-		this.primaryColor = par1;
-		this.secondaryColor = par2;
 	}
 
-	// スポーンエッグの配色。このサンプルでは全部同じ配色
-	@SideOnly(Side.CLIENT)
-	@Override
-	public int getColorFromItemStack(ItemStack par1ItemStack, int par2)
-	{
-		return par2 == 0 ? primaryColor : secondaryColor;
-	}
-
-	@Override
-	public String getItemStackDisplayName(ItemStack par1ItemStack)
-	{
-		String s = ("" + StatCollector.translateToLocal(this.getUnlocalizedName() + ".name")).trim();
-//		Class c = spawnableEntities[par1ItemStack.getItemDamage()];
-		String s1 = (String) EntityList.classToStringMapping.get(LMM_EntityLittleMaid.class);
-
-		if (s1 != null)
-		{
-			s = s + " " + StatCollector.translateToLocal("entity." + s1 + ".name");
-		}
-
-		return s;
-	}
-
-	// ItemMonsterPlacerのspawnCreatureがstaticでオーバーライドできないので呼び出し側をコピペ
 	@Override
 	public boolean onItemUse(ItemStack par1ItemStack, EntityPlayer par2EntityPlayer, World par3World, int par4, int par5, int par6, int par7, float par8, float par9, float par10)
 	{
@@ -104,7 +69,6 @@ public class LMM_ItemSpawnEgg extends ItemMonsterPlacer {
 		}
 	}
 
-	// ItemMonsterPlacerのspawnCreatureがstaticでオーバーライドできないので呼び出し側をコピペ
 	@Override
 	public ItemStack onItemRightClick(ItemStack par1ItemStack, World par2World, EntityPlayer par3EntityPlayer)
 	{
@@ -161,10 +125,9 @@ public class LMM_ItemSpawnEgg extends ItemMonsterPlacer {
 			}
 		}
 	}
-	// spawnableEntitiesのエンティティをスポーンさせるようにItemMonsterPlacerのspawnCreatureを改変
+
 	public static Entity spawnMaid(World par0World, int par1, double par2, double par4, double par6)
 	{
-//		Class c = spawnableEntities[par1];
 		Entity entity = null;
 		try {
 			entity = new LMM_EntityLittleMaid(par0World);
@@ -183,13 +146,10 @@ public class LMM_ItemSpawnEgg extends ItemMonsterPlacer {
 		return entity;
 	}
 
-	// spawnableEntitiesの各エンティティをスポーンさせるスポーンエッグを登録
 	@SideOnly(Side.CLIENT)
 	@Override
 	public void getSubItems(Item par1, CreativeTabs par2, List par3)
 	{
-//		for(int i = 0; i < spawnableEntities.length; ++i) {
-			par3.add(new ItemStack(par1, 1));
-//		}
+		par3.add(new ItemStack(par1, 1));
 	}
 }

@@ -1,5 +1,7 @@
 entity.LittleMaidX.name=LittleMaidX
 
+item.lmmx:spawn_lmmx_egg.name=Little Maid X
+
 littleMaidMob.mode.Torcher=Torcher
 littleMaidMob.mode.F-Torcher=F-Torcher
 littleMaidMob.mode.D-Torcher=D-Torcher

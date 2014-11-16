@@ -22,7 +22,7 @@ import cpw.mods.fml.common.registry.GameRegistry;
 
 @Mod(	modid = LMM_LittleMaidMobX.DOMAIN,
 		name  = LMM_LittleMaidMobX.DOMAIN,
-		dependencies="required-after:Forge@[10.12.2.1121,)")
+		dependencies="required-after:Forge@[10.13.2.1230,)")
 public class LMM_LittleMaidMobX {
 	
 	public static final String DOMAIN = "lmmx";
@@ -136,7 +136,7 @@ public class LMM_LittleMaidMobX {
 		ModLoader.addLocalization("entity.LittleMaidX.name", "ja_JP", "リトルメイド");
 		*/
 		// アイテム自体は登録しておき、レシピを隠して無効化
-		spawnEgg = new LMM_ItemSpawnEgg(0, 0);
+		spawnEgg = new LMM_ItemSpawnEgg();
 		spawnEgg.setUnlocalizedName(DOMAIN + ":spawn_lmmx_egg");
 		spawnEgg.setTextureName(DOMAIN + ":spawn_lmmx_egg");
 		GameRegistry.registerItem(spawnEgg, "spawn_lmmx_egg");

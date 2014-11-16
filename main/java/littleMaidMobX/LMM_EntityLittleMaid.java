@@ -45,9 +45,11 @@ import mmmlibx.lib.MMM_TextureManager;
 import mmmlibx.lib.multiModel.model.mc162.EquippedStabilizer;
 import mmmlibx.lib.multiModel.model.mc162.IModelCaps;
 import net.minecraft.block.Block;
+import net.minecraft.block.BlockDoublePlant;
 import net.minecraft.block.BlockFlower;
 import net.minecraft.block.BlockLeaves;
 import net.minecraft.block.BlockPumpkin;
+import net.minecraft.block.BlockStainedGlass;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityAgeable;
 import net.minecraft.entity.EntityCreature;
@@ -2298,8 +2300,10 @@ public class LMM_EntityLittleMaid extends EntityTameable implements ITextureEnti
 		if (lis != null) {
 			if (lis.getItem() instanceof ItemBlock) {
 				Block lblock = Block.getBlockFromItem(lis.getItem());
-				mstatPlanter = (lblock instanceof BlockFlower) && lblock.getRenderType() == 1;
-				mstatCamouflage = (lblock instanceof BlockLeaves) || (lblock instanceof BlockPumpkin);
+//				mstatPlanter =	(lblock instanceof BlockFlower      && lblock.getRenderType() ==  1) ||
+				mstatPlanter =	(lblock.getRenderType() ==  1) ||
+								(lblock instanceof BlockDoublePlant && lblock.getRenderType() == 40);
+				mstatCamouflage = (lblock instanceof BlockLeaves) || (lblock instanceof BlockPumpkin) || (lblock instanceof BlockStainedGlass);
 			} else if (lis.getItem() instanceof ItemSkull) {
 				mstatCamouflage = true;
 			}

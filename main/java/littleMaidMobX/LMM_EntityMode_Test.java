@@ -123,12 +123,12 @@ public class LMM_EntityMode_Test extends LMM_EntityModeBase implements ICommand 
 			switch (Integer.valueOf(var2[0])) {
 			case 0:
 				isEnable = false;
-				// TODO ★ p_152374_1_ はコマンドの実行権限のチェック用なので似たようなコマンドならなんでも良い
+				// TODO ★ p_152374_1_ はコマンドの実行権限のチェック用なので似たようなコマンドならなんでも良いはず？
 				W_Common.notifyAdmins(var1, new CommandTime(), 0, "LMM TestMessage Disable", new Object[] {});
 				break;
 			case 1:
 				isEnable = true;
-				// TODO ★ p_152374_1_ はコマンドの実行権限のチェック用なので似たようなコマンドならなんでも良い
+				// TODO ★ p_152374_1_ はコマンドの実行権限のチェック用なので似たようなコマンドならなんでも良いはず？
 				W_Common.notifyAdmins(var1, new CommandTime(), 0, "LMM TestMessage Enable", new Object[] {});
 				break;
 			case 2:

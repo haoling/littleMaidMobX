@@ -1,19 +1,23 @@
 package littleMaidMobX;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 import mmmlibx.lib.ContainerCreative;
 import mmmlibx.lib.MMM_Helper;
+import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.Slot;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 
 public class LMM_ContainerTriggerSelect extends ContainerCreative {
 
 	public List<ItemStack> weaponSelect = new ArrayList<ItemStack>();
 	public String weaponSelectName;
-	public List<Integer> weaponSelectList;
+	public List<Item> weaponSelectList;
 	public int weaponOffset;
 
 	public LMM_ContainerTriggerSelect(EntityPlayer entityplayer) {
@@ -43,20 +47,44 @@ public class LMM_ContainerTriggerSelect extends ContainerCreative {
 	}
 
 	private void initAllSelections() {
-		/* TODO ★ よく分からん
 		// コンテナ表示用アイテムの設定
 		this.itemList.clear();
-		Item[] var2 = Item.itemsList;
-		int var3 = var2.length;
-		
-		for (int var4 = 0; var4 < var3; ++var4) {
-			Item var5 = var2[var4];
+
+		for (Object o : Item.itemRegistry.getKeys())
+		{
+			Item item = (Item)Item.itemRegistry.getObject(o);
 			
-			if (var5 != null && var5.getCreativeTab() != null) {
-				var5.getSubItems(var5.itemID, (CreativeTabs) null, this.itemList);
+			if (item != null && item.getCreativeTab() != null) {
+				item.getSubItems(item, (CreativeTabs) null, this.itemList);
 			}
 		}
-		*/
+
+		// List 生成 (ソート用)
+		Comparator cmp = new Comparator<ItemStack>()
+			{
+				public int compare(ItemStack i1, ItemStack i2)
+				{
+					Item item1 = i1.getItem();
+					Item item2 = i2.getItem();
+					CreativeTabs ct1 = item1.getCreativeTab();
+					CreativeTabs ct2 = item2.getCreativeTab();
+					if(ct1!=null && ct2!=null)
+					{
+						if(ct1.getTabIndex() != ct2.getTabIndex())
+						{
+							return ct1.getTabIndex() < ct2.getTabIndex()? -1: 1;
+						}
+					}
+					if(item1 == item2)
+					{
+						System.out.println(i1.getDisplayName() + " : " + i2.getDisplayName());
+						return i1.getItemDamage() < i2.getItemDamage()? -1: 1;
+					}
+					
+					return (item1.getUnlocalizedName()).compareTo(item2.getUnlocalizedName());
+				}
+			};
+		Collections.sort(this.itemList, cmp);
 	}
 
 	@Override
@@ -184,13 +212,13 @@ public class LMM_ContainerTriggerSelect extends ContainerCreative {
 		weaponSelect.clear();
 		weaponSelectName = pName;
 		weaponSelectList = LMM_TriggerSelect.getuserTriggerList(pUsername, pName);
-		/* TODO ★
-		for (Integer li : weaponSelectList) {
-			if (Item.itemsList[li] == null)
-				continue;
-			weaponSelect.add(new ItemStack(Item.itemsList[li]));
+
+		for (Item li : weaponSelectList) {
+			if (li != null)
+			{
+				weaponSelect.add(new ItemStack(li));
+			}
 		}
-		*/
 	}
 
 	public List getItemList() {
