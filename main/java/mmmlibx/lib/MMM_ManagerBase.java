@@ -95,15 +95,16 @@ public abstract class MMM_ManagerBase {
 	}
 
 	private void loadClass(String pname) {
+		String lclassname = "";
 		// 対象ファイルをクラスとしてロード
 		try {
 			ClassLoader lclassLoader = MMMLib.class.getClassLoader();
 			Package lpackage = MMMLib.class.getPackage();
-			String lclassname = pname.replace(".class", "");
+			lclassname = pname.replace(".class", "");
 			Class lclass;
 			if(lpackage != null) {
-// TODO ★		lclassname = (new StringBuilder(String.valueOf(lpackage.getName()))).append(".").append(lclassname).toString();
-				lclassname = (new StringBuilder(String.valueOf("littleMaidMobX"))).append(".").append(lclassname).toString();
+	// TODO ★	lclassname = (new StringBuilder(String.valueOf(lpackage.getName()))).append(".").append(lclassname).toString();
+				lclassname = lclassname.replace("/", ".");
 // LMM_EntityModeManager でしか使ってないので暫定
 				lclass = lclassLoader.loadClass(lclassname);
 			} else {
@@ -129,10 +130,11 @@ public abstract class MMM_ManagerBase {
             */
 		}
 		catch (Exception exception) {
-			MMMLib.Debug("get%sClass-Exception.", getPreFix());
+			MMMLib.Debug("get%sClass-Exception.(%s)", getPreFix(), lclassname);
+			exception.printStackTrace();
 		}
 		catch (Error error) {
-			MMMLib.Debug("get%sClass-Error: %s", getPreFix(), pname);
+			MMMLib.Debug("get%sClass-Error: %s", getPreFix(), lclassname);
 			error.printStackTrace();
 		}
 		

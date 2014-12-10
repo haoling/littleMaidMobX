@@ -1,16 +1,13 @@
 package mmmlibx.lib;
 
 import littleMaidMobX.LMM_EntityLittleMaid;
-import mmmlibx.lib.multiModel.model.mc162.*;
+import mmmlibx.lib.multiModel.model.mc162.IModelCaps;
+import mmmlibx.lib.multiModel.model.mc162.ModelMultiBase;
 import net.minecraft.entity.DataWatcher;
-import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityAgeable;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.nbt.NBTTagInt;
-import net.minecraft.nbt.NBTTagIntArray;
-import net.minecraft.nbt.NBTTagList;
 import net.minecraft.util.ResourceLocation;
 
 
@@ -119,6 +116,24 @@ public class MMM_TextureData  {
 				lf = true;
 				textureModel[0] = lbox.models[0];
 			}
+			// TODO ★ 暫定処置 クライアントに存在しないテクスチャが指定された場合、デフォルトを読み出す。
+			else
+			{
+				lbox = MMM_TextureManager.instance.getDefaultTexture((ITextureEntity)owner);
+				textureBox[0] = textureBox[1] = lbox;
+
+				if (lbox.hasColor(lc)) {
+					textures[0][0] = lbox.getTextureName(lc);
+					lc = (color & 0x00ff) + (contract ? MMM_TextureManager.tx_eyecontract : MMM_TextureManager.tx_eyewild);
+					textures[0][1] = lbox.getTextureName(lc);
+					lf = true;
+					textureModel[0] = lbox.models[0];
+				}
+				else
+				{
+					// もう諦める
+				}
+			}
 		} else {
 			textureBox[0] = MMM_TextureManager.instance.getTextureBoxServerIndex(textureIndex[0]);
 		}
@@ -180,7 +195,15 @@ public class MMM_TextureData  {
 	public void setNextTexturePackege(int pTargetTexture) {
 		if (pTargetTexture == 0) {
 			int lc = getColor() + (isContract() ? 0 : MMM_TextureManager.tx_wild);
-			textureBox[0] = MMM_TextureManager.instance.getNextPackege((MMM_TextureBox)textureBox[0], lc);
+			// TODO ★ 暫定処置
+			if(textureBox[0] instanceof MMM_TextureBox)
+			{
+				textureBox[0] = MMM_TextureManager.instance.getNextPackege((MMM_TextureBox)textureBox[0], lc);
+			}
+			else
+			{
+				textureBox[0] = null;
+			}
 			if (textureBox[0] == null) {
 				// 指定色が無い場合は標準モデルに
 				textureBox[0] = textureBox[1] = MMM_TextureManager.instance.getDefaultTexture((ITextureEntity)owner);
@@ -225,7 +248,6 @@ public class MMM_TextureData  {
 		
 		// サイズの変更
 //		owner.setSize(textureBox[0].getWidth(entityCaps), textureBox[0].getHeight(entityCaps));
-		// いらねぇ手間かけさんせな
 		if(owner instanceof LMM_EntityLittleMaid)
 		{
 			((LMM_EntityLittleMaid)owner).setSize2(textureBox[0].getWidth(entityCaps), textureBox[0].getHeight(entityCaps));

@@ -14,6 +14,7 @@ import network.W_Network;
 import cpw.mods.fml.common.Mod;
 import cpw.mods.fml.common.Mod.EventHandler;
 import cpw.mods.fml.common.Mod.Instance;
+import cpw.mods.fml.common.SidedProxy;
 import cpw.mods.fml.common.event.FMLPostInitializationEvent;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 import cpw.mods.fml.common.network.NetworkRegistry;
@@ -42,8 +43,8 @@ public class LMM_LittleMaidMobX {
 		"DeathMessage = Print Death Massages.",
 		"Dominant = Spawn Anywhere.",
 		"Aggressive = true: Will be hostile, false: Is a pacifist",
-		"AchievementID = used Achievement index.(0 = Disable)",
-		"UniqueEntityId = UniqueEntityId(0 is AutoAssigned. max 255)"
+//		"AchievementID = used Achievement index.(0 = Disable)",
+//		"UniqueEntityId = UniqueEntityId(0 is AutoAssigned. max 255)"
 	};
 	
 //	@MLProp(info="Relative spawn weight. The lower the less common. 10=pigs. 0=off")
@@ -70,7 +71,7 @@ public class LMM_LittleMaidMobX {
 //	@MLProp(info="Default selected Texture Packege. Null is Random")
 	public static String cfg_defaultTexture = "";
 //	@MLProp(info="Print Debug Massages.")
-	public static boolean cfg_DebugMessage = true;
+	public static boolean cfg_PrintDebugMessage = false;
 //	@MLProp(info="Print Death Massages.")
 	public static boolean cfg_DeathMessage = true;
 //	@MLProp(info="Spawn Anywhere.")
@@ -80,13 +81,12 @@ public class LMM_LittleMaidMobX {
 //	@MLProp(info="true: Will be hostile, false: Is a pacifist")
 	public static boolean cfg_Aggressive = true;
 
-//	@MLProp(info="used Achievement index.(0 = Disable)")
-//	public static int cfg_AchievementID = 222000;
-
-//	@MLProp(info="UniqueEntityId(0 is AutoAssigned.)", max=255)
-//	public static int cfg_UniqueEntityId = 30;
-
 	public static Achievement ac_Contract;
+	
+	@SidedProxy(
+			clientSide = "littleMaidMobX.LMM_ProxyClient",
+			serverSide = "littleMaidMobX.LMM_ProxyCommon")
+	public static LMM_ProxyCommon proxy;
 
 	@Instance(DOMAIN)
 	public static LMM_LittleMaidMobX instance;
@@ -95,7 +95,7 @@ public class LMM_LittleMaidMobX {
 
 	public static void Debug(String pText, Object... pVals) {
 		// デバッグメッセージ
-		if (cfg_DebugMessage) {
+		if (cfg_PrintDebugMessage) {
 			System.out.println(String.format("littleMaidMob-" + pText, pVals));
 		}
 	}
@@ -153,7 +153,7 @@ public class LMM_LittleMaidMobX {
 			});
 		}
 		
-		ac_Contract = new Achievement("achievement.contract", "contract", 0, 0, spawnEgg, null).initIndependentStat().registerStat();
+		ac_Contract = new Achievement("achievement.contract", "contract", 0, 0, Items.cake, null).initIndependentStat().registerStat();
 		Achievement[] achievements = new Achievement[] { ac_Contract };
 		AchievementPage.registerAchievementPage(new AchievementPage("LittleMaidX", achievements));
 
@@ -169,7 +169,7 @@ public class LMM_LittleMaidMobX {
 			*/
 			
 			// デフォルトモデルの設定
-			LMM_Client.init();
+			proxy.init();
 		}
 		
 		// AIリストの追加
@@ -177,6 +177,9 @@ public class LMM_LittleMaidMobX {
 		
 		// アイテムスロット更新用のパケット
 		W_Network.init(DOMAIN);
+
+		// TODO ★ サウンドのロードを早くするテスト
+		proxy.loadSounds();
 		
 //		Debug("GUID-sneak: %s", LMM_EntityLittleMaid.maidUUIDSneak.toString());
 	}
@@ -210,7 +213,11 @@ public class LMM_LittleMaidMobX {
 			}
 			for(BiomeGenBase biome : biomeList)
 			{
-				EntityRegistry.addSpawn(LMM_EntityLittleMaid.class, cfg_spawnWeight, cfg_minGroupSize, cfg_maxGroupSize, EnumCreatureType.creature, biome);
+				if(biome!=null)
+				{
+					EntityRegistry.addSpawn(LMM_EntityLittleMaid.class,
+							cfg_spawnWeight, cfg_minGroupSize, cfg_maxGroupSize, EnumCreatureType.creature, biome);
+				}
 			}
 		}
 		
@@ -218,14 +225,8 @@ public class LMM_LittleMaidMobX {
 		LMM_EntityModeManager.loadEntityMode();
 		LMM_EntityModeManager.showLoadedModes();
 		
-		if (MMM_Helper.isClient) {
-			// 音声の解析
-			LMM_SoundManager.init();
-			// サウンドパック
-			LMM_SoundManager.loadDefaultSoundPack();
-			LMM_SoundManager.loadSoundPack();
-			LMM_SoundManager.createSoundJson();
-		}
+		// サウンドのロード
+// TODO ★		proxy.loadSounds();
 		
 		// IFFのロード
 		LMM_IFF.loadIFFs();

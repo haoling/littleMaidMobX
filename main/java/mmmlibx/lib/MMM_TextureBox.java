@@ -4,7 +4,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.TreeMap;
 
-import littleMaidMobX.LMM_LittleMaidMobX;
 import mmmlibx.lib.multiModel.model.mc162.*;
 import net.minecraft.item.ItemArmor;
 import net.minecraft.item.ItemStack;
@@ -225,11 +224,11 @@ public class MMM_TextureBox extends MMM_TextureBoxBase {
 				lmap = new HashMap<Integer, ResourceLocation>();
 				armors.put(ls, lmap);
 			}
-			lmap.put(pIndex, new ResourceLocation(LMM_LittleMaidMobX.DOMAIN, pLocation));
+			lmap.put(pIndex, new ResourceLocation(pLocation));
 			break;
 			
 		default:
-			textures.put(pIndex, new ResourceLocation(LMM_LittleMaidMobX.DOMAIN, pLocation));
+			textures.put(pIndex, new ResourceLocation(pLocation));
 			return true;
 		}
 		return lflag;

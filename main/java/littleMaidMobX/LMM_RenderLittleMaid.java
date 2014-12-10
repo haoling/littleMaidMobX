@@ -143,14 +143,6 @@ public class LMM_RenderLittleMaid extends RenderModelMulti {
 			double par2, double par4, double par6, float par8, float par9) {
 		LMM_EntityLittleMaid lmm = (LMM_EntityLittleMaid)par1EntityLiving;
 		
-		// TODO ★ どこでテクスチャをバインドしている？
-		if(lmm.textureData.textures[0][0] != null)
-		{
-			String s = lmm.textureData.textures[0][0].getResourcePath();
-			if(s.startsWith("/")) s = s.substring(1);
-			this.renderManager.renderEngine.bindTexture(new ResourceLocation(LMM_LittleMaidMobX.DOMAIN, s));
-		}
-		
 		fcaps = lmm.maidCaps;
 //		doRenderLitlleMaid(lmm, par2, par4, par6, par8, par9);
 		renderModelMulti(lmm, par2, par4, par6, par8, par9, fcaps);

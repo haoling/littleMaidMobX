@@ -27,7 +27,6 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemBow;
 import net.minecraft.item.ItemCloth;
-import net.minecraft.item.ItemDoublePlant;
 import net.minecraft.item.ItemSkull;
 import net.minecraft.item.ItemStack;
 

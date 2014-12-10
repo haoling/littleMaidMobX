@@ -4,24 +4,7 @@ import static littleMaidMobX.LMM_Statics.dataWatch_Absoption;
 import static littleMaidMobX.LMM_Statics.dataWatch_Color;
 import static littleMaidMobX.LMM_Statics.dataWatch_DominamtArm;
 import static littleMaidMobX.LMM_Statics.dataWatch_ExpValue;
-import static littleMaidMobX.LMM_Statics.dataWatch_Flags;
-import static littleMaidMobX.LMM_Statics.dataWatch_Flags_Aimebow;
-import static littleMaidMobX.LMM_Statics.dataWatch_Flags_Bloodsuck;
-import static littleMaidMobX.LMM_Statics.dataWatch_Flags_Freedom;
-import static littleMaidMobX.LMM_Statics.dataWatch_Flags_LooksSugar;
-import static littleMaidMobX.LMM_Statics.dataWatch_Flags_OverDrive;
-import static littleMaidMobX.LMM_Statics.dataWatch_Flags_Tracer;
-import static littleMaidMobX.LMM_Statics.dataWatch_Flags_Wait;
-import static littleMaidMobX.LMM_Statics.dataWatch_Flags_Working;
-import static littleMaidMobX.LMM_Statics.dataWatch_Flags_looksWithInterest;
-import static littleMaidMobX.LMM_Statics.dataWatch_Flags_looksWithInterestAXIS;
-import static littleMaidMobX.LMM_Statics.dataWatch_Flags_remainsContract;
-import static littleMaidMobX.LMM_Statics.dataWatch_Free;
-import static littleMaidMobX.LMM_Statics.dataWatch_Gotcha;
-import static littleMaidMobX.LMM_Statics.dataWatch_ItemUse;
-import static littleMaidMobX.LMM_Statics.dataWatch_Mode;
-import static littleMaidMobX.LMM_Statics.dataWatch_Parts;
-import static littleMaidMobX.LMM_Statics.dataWatch_Texture;
+import static littleMaidMobX.LMM_Statics.*;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -32,7 +15,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.UUID;
 
-import wrapper.W_Common;
 import mmmlibx.lib.ITextureEntity;
 import mmmlibx.lib.MMMLib;
 import mmmlibx.lib.MMM_Counter;
@@ -46,7 +28,6 @@ import mmmlibx.lib.multiModel.model.mc162.EquippedStabilizer;
 import mmmlibx.lib.multiModel.model.mc162.IModelCaps;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockDoublePlant;
-import net.minecraft.block.BlockFlower;
 import net.minecraft.block.BlockLeaves;
 import net.minecraft.block.BlockPumpkin;
 import net.minecraft.block.BlockStainedGlass;
@@ -105,6 +86,7 @@ import net.minecraft.world.EnumDifficulty;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
 import net.minecraft.world.biome.BiomeGenBase;
+import wrapper.W_Common;
 import cpw.mods.fml.common.ObfuscationReflectionHelper;
  
 public class LMM_EntityLittleMaid extends EntityTameable implements ITextureEntity {
@@ -2681,12 +2663,16 @@ public class LMM_EntityLittleMaid extends EntityTameable implements ITextureEnti
 			if (mstatMasterEntity == null || mstatMasterEntity.isDead) {
 				String lname; 
 				// サーバー側ならちゃんとオーナ判定する
-				if (!MMM_Helper.isClient
+
+				// Minecraftクラスのプレイヤーを取得していたが、サーバには存在しないためプロキシをかませる。サーバならNULL固定
+				EntityPlayer clientPlayer = LMM_LittleMaidMobX.proxy.getClientPlayer();
+
+				if (!LMM_LittleMaidMobX.proxy.isSinglePlayer()
 						|| LMM_LittleMaidMobX.cfg_checkOwnerName 
-						|| MMM_Helper.mc.thePlayer == null) {
+						|| clientPlayer == null) {
 					lname = getMaidMaster();
 				} else {
-					lname = MMM_Helper.getPlayerName(MMM_Helper.mc.thePlayer);
+					lname = MMM_Helper.getPlayerName(clientPlayer);
 				}
 				entityplayer = worldObj.getPlayerEntityByName(lname);
 				// とりあえず主の名前を入れてみる

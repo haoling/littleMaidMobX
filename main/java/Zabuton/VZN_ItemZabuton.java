@@ -1,18 +1,13 @@
-package Zabuton;
+package zabuton;
 
-import java.lang.reflect.Constructor;
 import java.util.List;
 
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
 import net.minecraft.block.material.Material;
-import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemDye;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.IIcon;
 import net.minecraft.util.MathHelper;
 import net.minecraft.util.MovingObjectPosition;
 import net.minecraft.util.MovingObjectPosition.MovingObjectType;
@@ -35,7 +30,7 @@ public class VZN_ItemZabuton extends Item {
 
 	public VZN_ItemZabuton() {
 		super();
-		maxStackSize = 8;
+		setMaxStackSize(8);
 		setHasSubtypes(true);
 		setMaxDamage(0);
 		setCreativeTab(CreativeTabs.tabTransport);

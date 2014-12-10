@@ -147,14 +147,14 @@ public class LMM_Net {
 			// IFFGUI open
 			lindex = MMM_Helper.getInt(pPayload.data, 1);
 			lname = MMM_Helper.getStr(pPayload.data, 5);
-			lval = LMM_IFF.getIFF(MMM_Helper.getPlayerName(playerEntity), lname);
+			lval = LMM_IFF.getIFF(MMM_Helper.getPlayerName(playerEntity), lname, playerEntity.worldObj);
 			LMM_LittleMaidMobX.Debug("getIFF-SV user:%s %s(%d)=%d", MMM_Helper.getPlayerName(playerEntity), lname, lindex, lval);
 			sendIFFValue(playerEntity, lval, lindex);
 			break;
 		case LMN_Server_SaveIFF:
 			// IFFファイルの保存
 			LMM_IFF.saveIFF(MMM_Helper.getPlayerName(playerEntity));
-			if (!MMM_Helper.isClient) {
+			if (!playerEntity.worldObj.isRemote) {
 				LMM_IFF.saveIFF("");
 			}
 			break;

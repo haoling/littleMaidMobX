@@ -135,7 +135,7 @@ public class LMM_EntityLittleMaidAvatar extends EntityPlayer {
 		// アイテム回収のエフェクト
 		if (worldObj.isRemote) {
 			// Client
-			LMM_Client.onItemPickup(this, entity, i);
+			LMM_LittleMaidMobX.proxy.onItemPickup(this, entity, i);
 		} else {
 			super.onItemPickup(entity, i);
 		}
@@ -145,7 +145,7 @@ public class LMM_EntityLittleMaidAvatar extends EntityPlayer {
 	public void onCriticalHit(Entity par1Entity) {
 		if (worldObj.isRemote) {
 			// Client
-			LMM_Client.onCriticalHit(this, par1Entity);
+			LMM_LittleMaidMobX.proxy.onCriticalHit(this, par1Entity);
 		} else {
 //TODO GGG			((WorldServer)worldObj).getEntityTracker().func_151248_b(avatar, new S0BPacketAnimation(par1Entity, 6));
 		}
@@ -154,7 +154,7 @@ public class LMM_EntityLittleMaidAvatar extends EntityPlayer {
 	@Override
 	public void onEnchantmentCritical(Entity par1Entity) {
 		if (worldObj.isRemote) {
-			LMM_Client.onEnchantmentCritical(this, par1Entity);
+			LMM_LittleMaidMobX.proxy.onEnchantmentCritical(this, par1Entity);
 		} else {
 //TODO GGG			((WorldServer)worldObj).getEntityTracker().func_151248_b(avatar, new S0BPacketAnimation(par1Entity, 7));
 		}

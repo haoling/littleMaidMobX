@@ -20,7 +20,6 @@ import java.util.regex.Pattern;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
-import littleMaidMobX.LMM_LittleMaidMobX;
 import mmmlibx.lib.multiModel.model.mc162.*;
 import net.minecraft.client.renderer.entity.RenderBiped;
 import net.minecraft.entity.Entity;
@@ -120,20 +119,33 @@ public class MMM_TextureManager {
 	public void init() {
 		// 検索対象ファイル名を登録します。
 		// パターンを登録しない場合、独自名称のMODファイル、テクスチャディレクトリ、クラスが読み込まれません。
-		FileManager.getModFile("mmmlibx", "littleMaidMobX");
+		FileManager.getModFile("mmmlibx", "littleMaidMob");
 		FileManager.getModFile("mmmlibx", "mmmlibx");
 		FileManager.getModFile("mmmlibx", "ModelMulti");
-		FileManager.getModFile("assets", "assets");
-//		addSearch("littleMaidMobX", "/mob/ModelMulti/", "ModelMulti_");
-//		addSearch("littleMaidMobX", "/mob/littleMaid/", "ModelLittleMaid_");
-		addSearch("mmmlibx", "/textures/entity/ModelMulti/", "ModelMulti_");
-		addSearch("mmmlibx", "/textures/entity/littleMaid/", "ModelMulti_");
-		addSearch("mmmlibx", "/textures/entity/littleMaid/", "ModelLittleMaid_");
-		addSearch("assets", "/textures/entity/ModelMulti/", "ModelMulti_");
-		addSearch("assets", "/textures/entity/littleMaid/", "ModelMulti_");
-		addSearch("assets", "/textures/entity/littleMaid/", "ModelLittleMaid_");
-	//	addSearch("net", "/littleMaid/", "ModelLittleMaid_");
-	//	addSearch("net", "/textures/entity/littleMaid/", "ModelLittleMaid_");
+//		FileManager.getModFile("assets", "assets");
+		
+//		FileManager.debugPrintAllFileList();
+		
+		addSearch("mmmlibx", "/assets/minecraft/textures/entity/ModelMulti/", "ModelMulti_");
+		addSearch("mmmlibx", "/assets/minecraft/textures/entity/littleMaid/", "ModelMulti_");
+		addSearch("mmmlibx", "/assets/minecraft/textures/entity/littleMaid/", "ModelLittleMaid_");
+//		addSearch("assets",  "/assets/minecraft/textures/entity/ModelMulti/", "ModelMulti_");
+//		addSearch("assets",  "/assets/minecraft/textures/entity/littleMaid/", "ModelMulti_");
+//		addSearch("assets",  "/assets/minecraft/textures/entity/littleMaid/", "ModelLittleMaid_");
+/*
+		// mods\MMMLib\フォルダと検索パスに追加
+		MMM_FileManager.getModFile("MMMLib", "MMMLib");
+		MMM_FileManager.getModFile("MMMLib", "ModelMulti");
+		addSearch("MMMLib", "/mob/ModelMulti/", "ModelMulti_");
+		addSearch("MMMLib", "/mob/littleMaid/", "ModelLittleMaid_");
+		addSearch("MMMLib", "/assets/minecraft/textures/entity/ModelMulti/", "ModelMulti_");
+		addSearch("MMMLib", "/assets/minecraft/textures/entity/littleMaid/", "ModelLittleMaid_");
+
+		// mods\MMMLib\フォルダと検索パスに追加
+		MMM_FileManager.getModFile("littleMaidMob", "littleMaidMob");
+		addSearch("littleMaidMob", "/mob/littleMaid/", "ModelLittleMaid_");
+		addSearch("littleMaidMob", "/assets/minecraft/textures/entity/littleMaid/", "ModelLittleMaid_");
+*/
 	}
 
 	protected String[] getSearch(String pName) {
@@ -319,9 +331,9 @@ public class MMM_TextureManager {
 		if (armorFilenamePrefix != null && armorFilenamePrefix.length > 0) {
 			for (String ls : armorFilenamePrefix) {
 				Map<Integer, ResourceLocation> lmap = new HashMap<Integer, ResourceLocation>();
-				lmap.put(tx_armor1, new ResourceLocation(LMM_LittleMaidMobX.DOMAIN,
+				lmap.put(tx_armor1, new ResourceLocation(
 						(new StringBuilder()).append("textures/models/armor/").append(ls).append("_layer_2.png").toString()));
-				lmap.put(tx_armor2, new ResourceLocation(LMM_LittleMaidMobX.DOMAIN,
+				lmap.put(tx_armor2, new ResourceLocation(
 						(new StringBuilder()).append("textures/models/armor/").append(ls).append("_layer_1.png").toString()));
 				lbox.armors.put(ls, lmap);
 			}
@@ -449,7 +461,9 @@ public class MMM_TextureManager {
 			Class lclass;
 			try {
 				if (lpackage != null) {
-					cn = (new StringBuilder(String.valueOf(lpackage.getName()))).append(".").append(cn).toString();
+//					cn = (new StringBuilder("")).append(".").append(cn).toString();
+					cn = cn.replace("/", ".");
+					System.out.println("MMM_TextureManager.addModelClass : "+cn);
 					lclass = lclassloader.loadClass(cn);
 				} else {
 					lclass = Class.forName(cn);
@@ -469,10 +483,12 @@ public class MMM_TextureManager {
 			}
 			catch (Exception exception) {
 				MMMLib.Debug("getModelClass-Exception: %s", fname);
+			// TODO ★一時的に無効化
 				exception.printStackTrace();
 			}
 			catch (Error error) {
 				MMMLib.Debug("getModelClass-Error: %s", fname);
+				error.printStackTrace();
 			}
 		}
 	}
@@ -484,6 +500,8 @@ public class MMM_TextureManager {
 		} else {
 			
 		}
+
+//		MMMLib.Debug("MMM_TextureManager.addTextureName : %s # %s # %s # %s", fname, pSearch[0], pSearch[1], pSearch[2]);
 		
 		if (fname.startsWith(pSearch[1])) {
 			int i = fname.lastIndexOf("/");

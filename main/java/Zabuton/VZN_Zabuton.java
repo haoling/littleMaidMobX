@@ -1,4 +1,4 @@
-package Zabuton;
+package zabuton;
 
 import net.minecraft.block.BlockDispenser;
 import net.minecraft.creativetab.CreativeTabs;
@@ -6,9 +6,9 @@ import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import cpw.mods.fml.client.registry.RenderingRegistry;
 import cpw.mods.fml.common.Mod;
 import cpw.mods.fml.common.Mod.EventHandler;
+import cpw.mods.fml.common.SidedProxy;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 import cpw.mods.fml.common.registry.EntityRegistry;
 import cpw.mods.fml.common.registry.GameRegistry;
@@ -18,13 +18,15 @@ import cpw.mods.fml.common.registry.GameRegistry;
 		dependencies="required-after:Forge@[10.12.2.1121,)")
 public class VZN_Zabuton
 {
-//	@MLProp(info="Zabuton's ItemID.(shiftedIndex = ItemID)")
-//	public static int ItemID = 22202;
 //	@MLProp
 	public static boolean isDebugMessage = true;
 	
 	public static Item zabuton;
 	public static final String DOMAIN = "zabuton";
+	@SidedProxy(
+			clientSide = "zabuton.VZN_ProxyClient",
+			serverSide = "zabuton.VZN_ProxyCommon")
+	public static VZN_ProxyCommon proxy;
 
 
 	public static void Debug(String pText, Object... pData) {
@@ -73,21 +75,8 @@ public class VZN_Zabuton
 		}
 
 		EntityRegistry.registerModEntity(VZN_EntityZabuton.class, "zabuton", 0, this, 80, 3, true);
-
-		if(evt.getSide().isClient())
-		{
-			RenderingRegistry.registerEntityRenderingHandler(VZN_EntityZabuton.class, new VZN_RenderZabuton());
-		}
+		proxy.RegistRenderer();
 		
 		BlockDispenser.dispenseBehaviorRegistry.putObject(zabuton, new VZN_BehaviorZabutonDispense());
 	}
-
-/* TODO ★ なんだこれ
-	@Override
-	public Packet23VehicleSpawn getSpawnPacket(Entity var1, int var2) {
-		//Modloader
-		// 面倒なので独自パケット
-		return new VZN_PacketZabtonSpawn((VZN_EntityZabuton)var1);
-	}
-*/
 }

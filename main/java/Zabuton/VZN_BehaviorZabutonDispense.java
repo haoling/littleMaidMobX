@@ -1,4 +1,4 @@
-package Zabuton;
+package zabuton;
 
 import net.minecraft.dispenser.BehaviorProjectileDispense;
 import net.minecraft.dispenser.IBlockSource;

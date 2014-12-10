@@ -64,14 +64,14 @@ public class LMM_EntityMode_Playing extends LMM_EntityModeBase {
 
 	protected boolean checkSnows(int x, int y, int z) {
 		// 周りが雪か？
-		boolean f = true;
-		f &= Block.isEqualTo(owner.worldObj.getBlock(x, y, z), Blocks.snow);
-		f &= Block.isEqualTo(owner.worldObj.getBlock(x + 1, y, z), Blocks.snow);
-		f &= Block.isEqualTo(owner.worldObj.getBlock(x - 1, y, z), Blocks.snow);
-		f &= Block.isEqualTo(owner.worldObj.getBlock(x, y, z + 1), Blocks.snow);
-		f &= Block.isEqualTo(owner.worldObj.getBlock(x, y, z - 1), Blocks.snow);
+		int snowCnt = 0;
+		snowCnt += Block.isEqualTo(owner.worldObj.getBlock(x,   y, z  ), Blocks.snow_layer) ? 3: 0;
+		snowCnt += Block.isEqualTo(owner.worldObj.getBlock(x+1, y, z  ), Blocks.snow_layer) ? 1: 0;
+		snowCnt += Block.isEqualTo(owner.worldObj.getBlock(x-1, y, z  ), Blocks.snow_layer) ? 1: 0;
+		snowCnt += Block.isEqualTo(owner.worldObj.getBlock(x,   y, z+1), Blocks.snow_layer) ? 1: 0;
+		snowCnt += Block.isEqualTo(owner.worldObj.getBlock(x,   y, z-1), Blocks.snow_layer) ? 1: 0;
 		
-		return f;
+		return snowCnt >= 5;
 	}
 
 	protected boolean movePlaying() {
@@ -252,7 +252,7 @@ public class LMM_EntityMode_Playing extends LMM_EntityModeBase {
 					boolean f = true;
 					for (int z = -1; z < 2; z++) {
 						for (int x = -1; x < 2; x++) {
-							f &= Block.isEqualTo(owner.worldObj.getBlock(xx + x, yy, zz + z), Blocks.snow);
+							f &= Block.isEqualTo(owner.worldObj.getBlock(xx + x, yy, zz + z), Blocks.snow_layer);
 						}
 					}
 					int lpr = owner.getRNG().nextInt(100) - 97;

@@ -1,4 +1,4 @@
-package Zabuton;
+package zabuton;
 
 import io.netty.buffer.ByteBuf;
 

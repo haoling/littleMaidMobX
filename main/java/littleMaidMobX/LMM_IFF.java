@@ -22,6 +22,7 @@ import net.minecraft.entity.passive.EntityOcelot;
 import net.minecraft.entity.passive.EntityTameable;
 import net.minecraft.item.Item;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.world.World;
 import wrapper.W_Common;
 
 /**
@@ -145,7 +146,7 @@ public class LMM_IFF {
 	/**
 	 * 敵味方識別判定
 	 */
-	public static int getIFF(String pUsername, String entityname) {
+	public static int getIFF(String pUsername, String entityname, World world) {
 		if (entityname == null) {
 			return LMM_LittleMaidMobX.cfg_Aggressive ? iff_Enemy : iff_Friendry;
 		}
@@ -166,7 +167,7 @@ public class LMM_IFF {
 			} else {
 				ls = entityname;
 			}
-			Entity lentity = EntityList.createEntityByName(ls, null);
+			Entity lentity = EntityList.createEntityByName(ls, world);
 			li = 0;
 			if (entityname.indexOf(":Contract") > -1) {
 				li = 1;
@@ -228,7 +229,7 @@ public class LMM_IFF {
 		if (!getUserIFF(pUsername).containsKey(lcname)) {
 			checkEntityStatic(lename, entity, li, null);
 		}
-		return getIFF(pUsername, lcname);
+		return getIFF(pUsername, lcname, entity.worldObj);
 	}
 
 	public static void loadIFFs() {
@@ -305,7 +306,7 @@ public class LMM_IFF {
 
 	public static void saveIFF(String pUsername) {
 		// IFF ファイルの書込み
-		File lfile = getFile(MMM_Helper.isClient ? null : pUsername);
+		File lfile = getFile(LMM_LittleMaidMobX.proxy.isSinglePlayer() ? null : pUsername);
 		Map<String, Integer> lmap = getUserIFF(pUsername);
 		
 		try {
@@ -321,9 +322,11 @@ public class LMM_IFF {
 							.append(LMM_TriggerSelect.selector.get(le.getKey()))
 							.append("=");
 					if (!le.getValue().isEmpty()) {
-						sb.append(le.getValue().get(0));
+						String itemName = Item.itemRegistry.getNameForObject(le.getValue().get(0));
+						sb.append(itemName);
 						for (int i = 1; i < le.getValue().size(); i++) {
-							sb.append(",").append(le.getValue().get(i));
+							itemName = Item.itemRegistry.getNameForObject(le.getValue().get(i));
+							sb.append(",").append(itemName);
 						}
 					}
 					sb.append("\r\n");

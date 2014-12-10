@@ -107,7 +107,7 @@ public class LMM_GuiIFF extends MMM_GuiMobSelect {
 	@Override
 	public void clickSlot(int pIndex, boolean pDoubleClick, String pName, EntityLivingBase pEntity) {
 		if (pDoubleClick) {
-			int tt = LMM_IFF.getIFF(null, pName);
+			int tt = LMM_IFF.getIFF(null, pName, pEntity.worldObj);
 			tt++;
 			if (tt > 2) {
 				tt = 0;
@@ -141,7 +141,7 @@ public class LMM_GuiIFF extends MMM_GuiMobSelect {
 	public void drawSlot(int pSlotindex, int pX, int pY, int pDrawheight,
 			Tessellator pTessellator, String pName, Entity pEntity) {
 		// 名前と敵味方識別の描画
-		int tt = LMM_IFF.getIFF(null, pName);
+		int tt = LMM_IFF.getIFF(null, pName, pEntity.worldObj);
 		int c = 0xffffff;
 		switch (tt) {
 		case LMM_IFF.iff_Friendry:

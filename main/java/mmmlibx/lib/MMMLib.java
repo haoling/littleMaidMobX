@@ -3,29 +3,25 @@ package mmmlibx.lib;
 import java.io.File;
 import java.util.List;
 
-import mmmlibx.lib.debugs.EzRecipes;
-import mmmlibx.lib.debugs.MMMDecorder;
-import mmmlibx.lib.debugs.MoveWindow;
-import mmmlibx.lib.destroyAll.DestroyAllManager;
 import mmmlibx.lib.guns.GunsBase;
 import mmmlibx.lib.multiModel.MMMLoader.MMMTransformer;
+import mmmlibx.lib.multiModel.texture.MultiModelManager;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraftforge.common.config.Configuration;
 import network.W_Message;
 import network.W_Network;
 import cpw.mods.fml.common.Mod;
+import cpw.mods.fml.common.SidedProxy;
 import cpw.mods.fml.common.event.FMLInitializationEvent;
 import cpw.mods.fml.common.event.FMLPostInitializationEvent;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 import cpw.mods.fml.relauncher.ReflectionHelper;
 import cpw.mods.fml.relauncher.Side;
 
-@Mod(
-		modid	= "MMMLibX",
+@Mod(	modid	= "MMMLibX",
 		name	= "MMMLibX",
-		version	= "1.7.x-srg-1"
-		)
+		version	= "1.7.x-srg-1")
 public class MMMLib {
 
 	public static final boolean cfg_isModelAlphaBlend = true;
@@ -34,6 +30,10 @@ public class MMMLib {
 	public static boolean isModelAlphaBlend = true;
 
 
+	@SidedProxy(
+			clientSide = "mmmlibx.lib.MMM_ProxyClient",
+			serverSide = "mmmlibx.lib.MMM_ProxyCommon")
+	public static MMM_ProxyCommon proxy;
 
 	public static void Debug(String pText, Object... pData) {
 		// デバッグメッセージ
@@ -50,6 +50,10 @@ public class MMMLib {
 
 	@Mod.EventHandler
 	public void preInit(FMLPreInitializationEvent pEvent) {
+
+		// MMMLibが立ち上がった時点で旧モデル置き換えを開始
+		MMMTransformer.isEnable = true;
+		
 		// コンフィグの解析・設定
 		File configFile = pEvent.getSuggestedConfigurationFile();
 		Configuration lconf = new Configuration(configFile);
@@ -58,6 +62,7 @@ public class MMMLib {
 		isModelAlphaBlend	= lconf.get("MMMLib", "isModelAlphaBlend", true).getBoolean(true);
 		
 		String ls;
+/* TODO ★
 		ls = "DestroyAll";
 		lconf.addCustomCategoryComment(ls, "Package destruction of the fixed range is carried out.");
 		DestroyAllManager.isDebugMessage = lconf.get(ls, "isDebugMessage", false).getBoolean(false);
@@ -68,17 +73,18 @@ public class MMMLib {
 		
 		ls = "MoveScreen";
 		lconf.addCustomCategoryComment(ls, "The position of a window is automatically moved to a start-up.");
-		MoveWindow.isMoveWindow	= lconf.get(ls, "isMoveWindow", false).getBoolean(false);
+ 		MoveWindow.isMoveWindow	= lconf.get(ls, "isMoveWindow", false).getBoolean(false);
 		MoveWindow.windowPosX	= lconf.get(ls, "windowPosX", 20).getInt(20);
 		MoveWindow.windowPosY	= lconf.get(ls, "windowPosY", 50).getInt(50);
 		
 		ls = "EzRecipes";
 		lconf.addCustomCategoryComment(ls, "Append Recipes from JSON.");
 		EzRecipes.isDebugMessage = lconf.get(ls, "isDebugMessage", false).getBoolean(false);
+*/
 		lconf.save();
 		
 		// 独自スクリプトデコーダー
-		(new MMMDecorder()).execute();
+// TODO ★		(new MMMDecorder()).execute();
 
 		MMM_StabilizerManager.init();
 
@@ -100,7 +106,7 @@ public class MMMLib {
 	@Mod.EventHandler
 	public void init(FMLInitializationEvent pEvent) {
 		if (pEvent.getSide() == Side.CLIENT) {
-			MoveWindow.setPosition();
+// TODO ★			MoveWindow.setPosition();
 		}
 	}
 
@@ -113,7 +119,7 @@ public class MMMLib {
 		
 		// 旧モデル用変換開始
 		MMMTransformer.isEnable = true;
-//		MultiModelManager.instance.execute();
+		MultiModelManager.instance.execute();
 		
 		// TODO test
 		List<File> llist = FileManager.getAllmodsFiles(getClass().getClassLoader(), true);

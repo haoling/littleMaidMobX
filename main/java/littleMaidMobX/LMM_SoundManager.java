@@ -3,9 +3,14 @@ package littleMaidMobX;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.Reader;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -13,13 +18,23 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipFile;
+import java.util.zip.ZipInputStream;
 
+import net.minecraft.util.ResourceLocation;
 import mmmlibx.lib.FileManager;
+import mmmlibx.lib.MMMLib;
 
 public class LMM_SoundManager {
 	
-//	protected static final File sounddir = new File(Minecraft.getMinecraftDir(), "/resources/mod/sound/littleMaidMob");
-	protected static File sounddir;
+	/** mods\littleMaidMobX を保持する */
+	private static File soundDir = null;
+	/** サウンドパックのフォルダまたはZipを保持する。nullの場合はサウンドをロードしない */
+	private static File soundPackDir = null;
+	private static Map<String, InputStream> soundStreamMap = new HashMap<String, InputStream>();
+
+	public static final String SoundConfigName = "littleMaidMob.cfg";
 
 	// soundindex, value
 	public static Map<Integer, String> soundsDefault = new HashMap<Integer, String>();
@@ -28,17 +43,63 @@ public class LMM_SoundManager {
 	public static float soundRateDefault;
 	public static Map<String, Map<Integer, Float>> soundRateTexture = new HashMap<String,Map<Integer,Float>>();
 
-
-
+	
 	public static void init() {
 		// 初期設定
-		sounddir = new File(FileManager.assetsDir, LMM_LittleMaidMobX.DOMAIN + "/sounds");
-		if (!sounddir.exists() || !sounddir.isDirectory()) {
-			sounddir.mkdir();
-			LMM_LittleMaidMobX.Debug("Create SoundDir: %s", sounddir.toString());
+		soundDir = new File(FileManager.dirMods, "/littleMaidMobX/");
+		if (!getSoundDir().exists() || !getSoundDir().isDirectory()) {
+			getSoundDir().mkdirs();
+			LMM_LittleMaidMobX.Debug("Create SoundDir: %s", getSoundDir().toString());
 		} else {
-			LMM_LittleMaidMobX.Debug("SoundDir: %s", sounddir.toString());
+			LMM_LittleMaidMobX.Debug("SoundDir: %s", getSoundDir().toString());
 		}
+	}
+	
+	public static File getSoundDir()
+	{
+		return soundDir;
+	}
+	
+	public static InputStream getSoundJson()
+	{
+		// 起動時に自動生成される mods/littleMaidMobX/sounds/sounds.json を読み出す
+		try
+		{
+			return new FileInputStream(new File(getSoundDir(), "sounds.json"));
+		}
+		catch (FileNotFoundException e) {}
+
+		return null;
+	}
+	
+	public static InputStream getResourceStream(ResourceLocation resource)
+	{
+		String path = resource.getResourcePath().toLowerCase();
+		
+		// よく分からんが .mcmeta はいらないのと思うので消す
+		if(path.endsWith(".mcmeta"))
+		{
+			path = path.substring(0, path.length()-7);
+		}
+
+		if(path.equalsIgnoreCase("sounds.json"))
+		{
+			return LMM_SoundManager.getSoundJson();
+		}
+		
+		String fileName = path;
+		int c = fileName.lastIndexOf('/');
+		if(c >= 0)
+		{
+			fileName = fileName.substring(c+1);
+		}
+		
+		if(soundStreamMap.size() > 0 && fileName.endsWith(".ogg"))
+		{
+			return soundStreamMap.get(fileName);
+		}
+
+		return null;
 	}
 
 	public static void setSoundRate(int soundindex, String value, String target) {
@@ -260,16 +321,16 @@ public class LMM_SoundManager {
 		}
 	}
 
-	public static void decodeSoundPack(File file, boolean isdefault) {
+	public static void decodeSoundPack(String fileName, Reader reader, boolean iswrite, boolean isdefault) {
 		// サウンドパックを解析して音声を設定
 		try {
 			List<LMM_EnumSound> list1 = new ArrayList<LMM_EnumSound>();
 			list1.addAll(Arrays.asList(LMM_EnumSound.values()));
 			list1.remove(LMM_EnumSound.Null);
-			BufferedReader breader = new BufferedReader(new FileReader(file));
+			BufferedReader breader = new BufferedReader(reader);
 			boolean loadsoundrate = false;
 			String str;
-			String packname = file.getName();
+			String packname = fileName;
 			packname = packname.substring(0, packname.lastIndexOf("."));
 			while ((str = breader.readLine()) != null) {
 				str = str.trim();
@@ -278,8 +339,17 @@ public class LMM_SoundManager {
 				if (i > -1) {
 					String name = str.substring(0, i).trim();
 					String value = str.substring(i + 1).trim();
+					
 					int index = -1;
 					if (name.startsWith("se_")) {
+
+						// TODO ★ サウンドパックのファイル構成が正しいとは限らないため、ファイル構造を無視して読みだす
+						int cd = value.lastIndexOf('.');
+						if(cd >= 0) value = value.substring(cd+1);
+
+						// TODO ★ 音声ファイルの指定文字列の末尾に数値が付いてしまっているパックがあるので削除
+						value = value.replaceAll("\\d+$", ""); // ファイルの終わりの数値部分を削除
+						
 						String ss = name.substring(3);
 						try {
 							index = LMM_EnumSound.valueOf(ss).index;
@@ -308,20 +378,23 @@ public class LMM_SoundManager {
 			}
 			breader.close();
 			
-			// 無かった項目をcfgへ追加
-			if (!list1.isEmpty()) {
-				BufferedWriter bwriter = new BufferedWriter(new FileWriter(file, true));
-				for (int i = 0; i < list1.size(); i++) {
-					writeBuffer(bwriter, list1.get(i));
+			// コンフィグファイルがフォルダ内の場合のみ書き込む(Zip内の場合は書き込まない)
+			if(iswrite)
+			{
+				// 無かった項目をcfgへ追加
+				if (!list1.isEmpty()) {
+					BufferedWriter bwriter = new BufferedWriter(new FileWriter(fileName, true));
+					for (int i = 0; i < list1.size(); i++) {
+						writeBuffer(bwriter, list1.get(i));
+					}
+					bwriter.close();
 				}
-				bwriter.close();
+				if (!loadsoundrate) {
+					BufferedWriter bwriter = new BufferedWriter(new FileWriter(fileName, true));
+					writeBufferSoundRate(bwriter, 1.0F);
+					bwriter.close();
+				}
 			}
-			if (!loadsoundrate) {
-				BufferedWriter bwriter = new BufferedWriter(new FileWriter(file, true));
-				writeBufferSoundRate(bwriter, 1.0F);
-				bwriter.close();
-			}
-			
 		}
 		catch (Exception exception) {
 			LMM_LittleMaidMobX.Debug("decodeSound Exception.");
@@ -329,9 +402,10 @@ public class LMM_SoundManager {
 	}
 
 	public static void loadSoundPack() {
+	/* TODO ★ デフォルトと同じファイルを読み込んでいる？必要？
 		if (sounddir.exists() && sounddir.isDirectory()) {
 			for (File file : sounddir.listFiles()) {
-				if (file.getName().compareToIgnoreCase("littleMaidMob.cfg") == 0) {
+				if (file.getName().compareToIgnoreCase(SoundConfigName) == 0) {
 					continue;
 				}
 				if (file.isFile() && file.canRead() && file.getName().endsWith(".cfg")) {
@@ -345,21 +419,198 @@ public class LMM_SoundManager {
 		}
 		
 		rebuildSoundPack();
+	*/
 	}
 
-	public static boolean loadDefaultSoundPack() {
-		// getAppDir使うとディレクトリがなければ作成される
-//		File sounddir = Minecraft.getAppDir("minecraft/resources/mod/sound/littleMaidMob"); 
-		File soundfile = new File(sounddir, "littleMaidMob.cfg"); 
-		if (soundfile.exists() && soundfile.isFile()) {
-			LMM_LittleMaidMobX.Debug(soundfile.getName());
-			decodeSoundPack(soundfile, true);
-			return true;
-		} else {
-			LMM_LittleMaidMobX.Debug("no Default Sound cfg.");
-			createDefaultSoundPack(soundfile);
-			return false;
+	public static void loadDefaultSoundPack()
+	{
+		try
+		{
+			boolean loadCfg = loadSoundPackCfg();
+		
+			if(loadCfg == false)
+			{
+				File soundCfg = new File(getSoundDir(), "default_" + SoundConfigName);
+				soundPackDir = null;
+	
+				if (soundCfg.exists() && soundCfg.isFile())
+				{
+					LMM_LittleMaidMobX.Debug(soundCfg.getName());
+
+					Reader reader = new FileReader(soundCfg);
+					decodeSoundPack(soundCfg.getName(), reader, true, true);
+					reader.close();
+				}
+				else
+				{
+					LMM_LittleMaidMobX.Debug("no Default Sound cfg.");
+					createDefaultSoundPack(soundCfg);
+				}
+			}
 		}
+		catch (Exception e)
+		{
+			LMM_LittleMaidMobX.Debug("Error: Create Sound cfg failed.");
+			e.printStackTrace();
+		}
+		rebuildSoundPack();
+	}
+	
+	/** mods 直下のディレクトリとZipを全て検索、ディレクトリ内のZipはチェックしない */
+	public static boolean loadSoundPackCfg() throws IOException
+	{
+		for(File file : FileManager.dirMods.listFiles())
+		{
+			if(file.isDirectory())
+			{
+				if(searchSoundCfgDir(file))
+				{
+					soundPackDir = file;
+					putAllSoundStream(file);
+					createSoundJson(file);
+					return true;
+				}
+			}
+			else if(file.getName().toLowerCase().endsWith(".zip"))
+			{
+				if(searchSoundCfgZip(file))
+				{
+					soundPackDir = file;
+					createSoundJson(file);
+					return true;
+				}
+			}
+		}
+		return false;
+	}
+
+	public static void putAllSoundStream(File dir) throws IOException
+	{
+		for(File file : dir.listFiles())
+		{
+			String name = file.getName().toLowerCase();
+			if(file.isDirectory())
+			{
+				putAllSoundStream(file);
+			}
+			else if(name.endsWith(".ogg"))
+			{
+				soundStreamMap.put(name, new FileInputStream(file));
+			}
+		}
+	}
+	
+	// mods配下の全フォルダからコンフィグファイルを検索する
+	// 最初に見つけた時点で終了する。2つ以上サウンドパックを入れた場合、どちらが使われるかは保証できない。
+	public static boolean searchSoundCfgDir(File dir) throws IOException
+	{
+		for(File file : dir.listFiles())
+		{
+			if(file.isDirectory())
+			{
+				if(searchSoundCfgDir(file))
+				{
+					return true;
+				}
+			}
+			else if(file.getName().equalsIgnoreCase(SoundConfigName))
+			{
+				Reader reader = new FileReader(file);
+				
+				decodeSoundPack(file.getName(), reader, false, true);
+				
+				reader.close();
+				
+				return true;
+			}
+		}
+		return false;
+	}
+	
+	// zip配下からコンフィグファイルを検索する
+	// 最初に見つけた時点で終了する。2つ以上サウンドパックを入れたら保証できない。
+	public static boolean searchSoundCfgZip(File file)
+	{
+		boolean foundCfg = false;
+		try
+		{
+			FileInputStream fileinputstream = new FileInputStream(file);
+			ZipInputStream zipinputstream = new ZipInputStream(fileinputstream);
+			ZipEntry zipentry;
+			do
+			{
+				zipentry = zipinputstream.getNextEntry();
+				if(zipentry == null)
+				{
+					break;
+				}
+				if (!zipentry.isDirectory())
+				{
+					String name = zipentry.getName();
+					int c = name.lastIndexOf("/");
+					if(c >= 0)
+					{
+						name = name.substring(c+1);
+					}
+					name = name.toLowerCase();
+					if (foundCfg==false && name.equalsIgnoreCase(SoundConfigName))
+					{
+						ZipFile zipFile = new ZipFile(file);
+							InputStream inputStream = zipFile.getInputStream(zipentry);
+								Reader reader = new InputStreamReader(inputStream);
+									decodeSoundPack(name, reader, false, true);
+								reader.close();
+							inputStream.close();
+						zipFile.close();
+
+						foundCfg = true;
+						break;
+					}
+				}
+			}
+			while(true);
+			
+			zipinputstream.close();
+			fileinputstream.close();
+			
+			// .cfgを見つけたら、サウンドパックと判断し、oggを全て読み出す
+			if(foundCfg)
+			{
+				fileinputstream = new FileInputStream(file);
+				zipinputstream = new ZipInputStream(fileinputstream);
+				do
+				{
+					zipentry = zipinputstream.getNextEntry();
+					if(zipentry == null)
+					{
+						break;
+					}
+					if (!zipentry.isDirectory())
+					{
+						String name = zipentry.getName();
+						int c = name.lastIndexOf("/");
+						if(c >= 0)
+						{
+							name = name.substring(c+1);
+						}
+						name = name.toLowerCase();
+						if (name.endsWith(".ogg"))
+						{
+							soundStreamMap.put(name, (new ZipFile(file)).getInputStream(zipentry));
+						}
+					}
+				}
+				while(true);
+				
+				zipinputstream.close();
+				fileinputstream.close();
+			}
+		}
+		catch (Exception exception)
+		{
+			MMMLib.Debug("Load Sound pack Zip-Exception.");
+		}
+		return foundCfg;
 	}
 
 	public static boolean createDefaultSoundPack(File file1) {
@@ -419,18 +670,19 @@ public class LMM_SoundManager {
 		buffer.newLine();
 	}
 
-	public static void createSoundJson()
+	/** 引数には、サウンドが入ったフォルダか、zipを指定 */
+	public static void createSoundJson(File dir)
 	{
-		if(!sounddir.exists() || !sounddir.isDirectory())
+		if(!getSoundDir().exists() || !getSoundDir().isDirectory())
 		{
 			return;
 		}
 		
-		File file1 = new File(sounddir.getParent(), "sounds.json");
+		File file1 = new File(getSoundDir(), "sounds.json");
 		try {
 			BufferedWriter bwriter = new BufferedWriter(new FileWriter(file1));
 			
-			String str = searchSoundAndWriteFile("", sounddir, "");
+			String str = searchSoundAndWriteFile("", dir, "");
 			bwriter.write("{\n" + str + "\n}\n");
 			bwriter.newLine();
 			
@@ -442,20 +694,32 @@ public class LMM_SoundManager {
 		}
 	}
 
+	private static String searchSoundAndWriteFile(String string, File dir, String string2) throws IOException
+	{
+		if(dir.isDirectory())
+		{
+			return searchSoundAndWriteFileDir(string, dir, string2);
+		}
+		else
+		{
+			return searchSoundAndWriteFileZip(string, dir);
+		}
+	}
+
 	// 再帰的にフォルダを捜査し、音声ファイルをファイル出力する
 	/* 出力例
 		{
-		"mmm.akari":{"category":"master","sounds":["mmm/akari1","mmm/akari2","mmm/akari3"]},
-		"mmm.attack":{"category":"master","sounds":["mmm/attack01","mmm/attack02","mmm/attack03"]}
+		"akari":{"category":"master","sounds":["akari1","akari2","akari3"]},
+		"attack":{"category":"master","sounds":["attack01","attack02","attack03"]}
 		}
 	*/
-	public static String searchSoundAndWriteFile(String output, File dir, String path) throws IOException
+	public static String searchSoundAndWriteFileDir(String output, File dir, String path) throws IOException
 	{
 		for(File file : dir.listFiles())
 		{
 			if(file.isDirectory())
 			{
-				output = output + searchSoundAndWriteFile(output, file, path + file.getName() +".");
+				output = output + searchSoundAndWriteFileDir(output, file, path + file.getName() +".");
 			}
 		}
 
@@ -464,7 +728,7 @@ public class LMM_SoundManager {
 		{
 			if(file.isFile() && file.getName().endsWith(".ogg"))
 			{
-				final String fileName  = path + file.getName().substring(0, file.getName().length()-4); // 拡張子削除
+				final String fileName  = file.getName().substring(0, file.getName().length()-4); // 拡張子削除
 				final String soundName = fileName.replaceAll("\\d+$", ""); // ファイルの終わりの数値部分を削除
 				final String name = fileName.replace(".", "/");
 				if(!map.containsKey(soundName))
@@ -496,6 +760,76 @@ public class LMM_SoundManager {
 				output = output + ",\n";
 			}
 			output = output + s;
+		}
+		
+		return output;
+	}
+	public static String searchSoundAndWriteFileZip(String output, File dir) throws IOException
+	{
+		Map<String, List<String>> map = new LinkedHashMap<String, List<String>>();
+		try
+		{
+			FileInputStream fileinputstream = new FileInputStream(dir);
+			ZipInputStream zipinputstream = new ZipInputStream(fileinputstream);
+			ZipEntry zipentry;
+			do
+			{
+				zipentry = zipinputstream.getNextEntry();
+				if(zipentry == null)
+				{
+					break;
+				}
+				String fileNameInZip = zipentry.getName();
+				if (!zipentry.isDirectory() && fileNameInZip.endsWith(".ogg"))
+				{
+					String fileName  = fileNameInZip.substring(0, fileNameInZip.length()-4); // 拡張子削除
+					int c = fileName.lastIndexOf('/');
+					if(c >= 0)
+					{
+						fileName = fileName.substring(c+1);
+					}
+					
+					final String soundName = fileName.replaceAll("\\d+$", ""); // ファイルの終わりの数値部分を削除
+					final String name = fileName.replace(".", "/");
+					if(!map.containsKey(soundName))
+					{
+						map.put(soundName, new ArrayList<String>());
+					}
+					map.get(soundName).add(name);
+				}
+			}
+			while(true);
+
+			zipinputstream.close();
+			fileinputstream.close();
+
+			for(String key : map.keySet())
+			{
+				String s = "";
+				for(String name : map.get(key))
+				{
+					if(s.isEmpty())
+					{
+						s = "\""+key+"\":{\"category\":\"master\",\"sounds\":[";
+					}
+					else
+					{
+						s = s + ",";
+					}
+					s = s + "\"" + name + "\"";
+				}
+				s = s + "]}";
+
+				if(!output.isEmpty())
+				{
+					output = output + ",\n";
+				}
+				output = output + s;
+			}
+		}
+		catch (Exception exception)
+		{
+			exception.printStackTrace();
 		}
 		
 		return output;

@@ -1,6 +1,7 @@
 package network;
 
-import littleMaidMobX.LMM_Client;
+import littleMaidMobX.LMM_LittleMaidMobX;
+import littleMaidMobX.LMM_ProxyClient;
 import littleMaidMobX.LMM_Net;
 import mmmlibx.lib.MMMLib;
 import cpw.mods.fml.common.network.simpleimpl.IMessage;
@@ -16,7 +17,7 @@ public class W_MessageHandler implements IMessageHandler<W_Message, IMessage>
 		{
 			if(ctx.side.isClient())
 			{
-				LMM_Client.clientCustomPayload(message);
+				LMM_LittleMaidMobX.proxy.clientCustomPayload(message);
 			}
 			else
 			{

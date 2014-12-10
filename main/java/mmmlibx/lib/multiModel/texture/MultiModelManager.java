@@ -12,11 +12,10 @@ import java.util.Map.Entry;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import littleMaidMobX.LMM_LittleMaidMobX;
 import mmmlibx.lib.FileLoaderBase;
 import mmmlibx.lib.MMMLib;
-import mmmlibx.lib.ModelLittleMaid_Orign;
 import mmmlibx.lib.multiModel.model.AbstractModelBase;
+import mmmlibx.lib.multiModel.model.mc162.ModelLittleMaid_Orign;
 import net.minecraft.util.ResourceLocation;
 
 public class MultiModelManager extends FileLoaderBase {
@@ -75,7 +74,14 @@ public class MultiModelManager extends FileLoaderBase {
 	@Override
 	public boolean load(File pFile, String pFileName, InputStream pInputStream) {
 //		MMMLib.Debug("loadTexture:%s, %s", pFile.toString(), pFileName);
-		return addModelClass(pFileName) || addTexture(pFile, pFileName);
+		if(MMMLib.proxy.isClient())
+		{
+			if(addModelClass(pFileName))
+			{
+				return true;
+			}
+		}
+		return addTexture(pFile, pFileName);
 	}
 
 	/**
@@ -132,7 +138,7 @@ public class MultiModelManager extends FileLoaderBase {
 							textures.put(lname, lcon);
 						}
 //						MMMLib.Debug("addTexturePack: %s - %d: %s", lname, lcol, pFileName);
-						lcon.addTexture(lcol, new ResourceLocation(LMM_LittleMaidMobX.DOMAIN, pFileName));
+						lcon.addTexture(lcol, new ResourceLocation(pFileName));
 						return true;
 					}
 				}

@@ -26,7 +26,14 @@ public class ModelBaseSolo extends ModelBaseNihil implements IModelBaseMMM {
 	@Override
 	public void setLivingAnimations(EntityLivingBase par1EntityLiving, float par2, float par3, float par4) {
 		if (model != null) {
-			model.setLivingAnimations(entityCaps, par2, par3, par4);
+			try
+			{
+				model.setLivingAnimations(entityCaps, par2, par3, par4);
+			}
+			catch(Exception e)
+			{
+				e.printStackTrace();
+			}
 		}
 		isAlphablend = true;
 	}

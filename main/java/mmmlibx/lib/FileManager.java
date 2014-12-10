@@ -20,6 +20,7 @@ public class FileManager {
 	public static String minecraftDir	= "";
 //	public static File   minecraftJar	= null;	// minecraft.jarを見に行くのは昔の仕様？
 	public static String assetsDir		= "";	// mods/LittleMaidX/assets
+	public static boolean isDevdir;
 	public static Map<String,List<File>>    fileList = new HashMap<String, List<File>>();
 
 
@@ -34,11 +35,21 @@ public class FileManager {
 	
 	// MODロード直後に実行すること。
 	// 引数にはMODのベースとなるフルパスを渡す
-	// C:\~~~~\minecraft\mods\littleMaidMobX
+	// C:\~~~~\minecraft\mods\littleMaidMobX または
+	// C:\~~~~\minecraft\mods\1.7.2\littleMaidMobX
 	public static void setSrcPath(File file)
 	{
-		assetsDir = file.getPath() + "\\assets";
-		dirMods = new File(file.getPath());
+		assetsDir = file.getPath() + "/assets";
+		// eclipseの環境の場合、eclipseフォルダ配下のmodsを見に行く
+		isDevdir = file.getName().equalsIgnoreCase("bin");
+		if(isDevdir)
+		{
+			dirMods = new File(file.getParent()+"/eclipse/mods");
+		}
+		else
+		{
+			dirMods = new File(file.getParent());
+		}
 	}
 
 	/**
@@ -46,6 +57,7 @@ public class FileManager {
 	 * バージョンごとの物も含む。
 	 * @return
 	 */
+	/* TODO ★一時的に無効化
 	public static List<File> getAllmodsFiles() {
 		List<File> llist = new ArrayList<File>();
 		if (dirMods.exists()) {
@@ -78,6 +90,7 @@ public class FileManager {
 		files = llist;
 		return llist;
 	}
+	*/
 	public static List<File> getAllmodsFiles(ClassLoader pClassLoader, boolean pFlag) {
 		List<File> llist = new ArrayList<File>();
 		if (pClassLoader instanceof URLClassLoader ) {
@@ -147,7 +160,7 @@ public class FileManager {
 				MMMLib.Debug("getModFile-get:%d.", dirMods.list().length);
 				for (File t : dirMods.listFiles()) {
 					if (t.getName().indexOf(pprefix) != -1) {
-						if (t.getName().endsWith(".zip")) {
+						if (t.getName().endsWith(".zip") || t.getName().endsWith(".jar")) {
 							llist.add(t);
 							MMMLib.Debug("getModFile-file:%s", t.getName());
 						} else if (t.isDirectory()) {
@@ -168,6 +181,18 @@ public class FileManager {
 			return null;
 		}
 	}
+	public static void debugPrintAllFileList()
+	{
+		for(String key : fileList.keySet())
+		{
+			List<File> list = fileList.get(key);
+			for(File f : list)
+			{
+				System.out.println("MMMLib-AllFileList ### " + key + " : " + f.getPath());
+			}
+		}
+	}
+	
 	public static List<File> getFileList(String pname)
 	{
 		return fileList.get(pname);

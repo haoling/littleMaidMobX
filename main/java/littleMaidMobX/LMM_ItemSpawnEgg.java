@@ -28,6 +28,7 @@ public class LMM_ItemSpawnEgg extends Item
 	public LMM_ItemSpawnEgg()
 	{
 		this.setHasSubtypes(true);
+		this.setCreativeTab(CreativeTabs.tabMisc);
 	}
 
 	@Override

@@ -1,6 +1,8 @@
 package mmmlibx.lib.multiModel.MMMLoader;
 
 import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
@@ -8,11 +10,17 @@ import java.util.Set;
 
 import javax.imageio.ImageIO;
 
+import littleMaidMobX.LMM_LittleMaidMobX;
+import littleMaidMobX.LMM_SoundManager;
+import mmmlibx.lib.MMMLib;
 import net.minecraft.client.resources.DefaultResourcePack;
 import net.minecraft.client.resources.IResourcePack;
 import net.minecraft.client.resources.data.IMetadataSection;
 import net.minecraft.client.resources.data.IMetadataSerializer;
 import net.minecraft.util.ResourceLocation;
+
+import com.google.common.collect.ImmutableSet;
+
 import cpw.mods.fml.common.ModContainer;
 
 /**
@@ -31,7 +39,7 @@ public class MMMResourcePack implements IResourcePack {
 
 	@Override
 	public InputStream getInputStream(ResourceLocation par1ResourceLocation) throws IOException {
-		InputStream inputstream = getResourceStream(par1ResourceLocation);
+		InputStream inputstream = getResourceStream(par1ResourceLocation, true);
 		
 		if (inputstream != null) {
 			return inputstream;
@@ -40,21 +48,35 @@ public class MMMResourcePack implements IResourcePack {
 		}
 	}
 
-	private InputStream getResourceStream(ResourceLocation par1ResourceLocation) {
-		InputStream lis = MMMResourcePack.class.getResourceAsStream(par1ResourceLocation.getResourcePath());
-//		MMMLib.Debug("getResource:%s", lis == null ? "Null" : lis.toString());
+	private InputStream getResourceStream(ResourceLocation resource, boolean b) {
+		String path = resource.getResourcePath();
+		InputStream lis = MMMResourcePack.class.getResourceAsStream(path);
+		if(resource.getResourceDomain().equalsIgnoreCase(LMM_LittleMaidMobX.DOMAIN))
+		{
+			if(lis==null)
+			{
+				lis = LMM_SoundManager.getResourceStream(resource);
+			}
+
+			MMMLib.Debug("getResource:"+b+":%s : %s", resource, lis);
+		}
 		return lis;
 	}
 
 	@Override
 	public boolean resourceExists(ResourceLocation par1ResourceLocation) {
-		return getResourceStream(par1ResourceLocation) != null;
+		InputStream is = getResourceStream(par1ResourceLocation, false);
+		
+		// TODO ★ このInputStream はクローズしなくていいの？
+		
+		return is != null;
 	}
 
+	public static final Set lmmxResourceDomains = ImmutableSet.of(LMM_LittleMaidMobX.DOMAIN);
 	@Override
 	@SuppressWarnings("rawtypes")
 	public Set getResourceDomains() {
-		return DefaultResourcePack.defaultResourceDomains;
+		return lmmxResourceDomains;
 	}
 
 	@Override
@@ -63,6 +85,7 @@ public class MMMResourcePack implements IResourcePack {
 		return null;
 	}
 
+	// 未使用
 	@Override
 	public BufferedImage getPackImage() {// throws IOException {
 		try {
