@@ -1,9 +1,5 @@
 package littleMaidMobX;
 
-import static littleMaidMobX.LMM_Statics.dataWatch_Absoption;
-import static littleMaidMobX.LMM_Statics.dataWatch_Color;
-import static littleMaidMobX.LMM_Statics.dataWatch_DominamtArm;
-import static littleMaidMobX.LMM_Statics.dataWatch_ExpValue;
 import static littleMaidMobX.LMM_Statics.*;
 
 import java.lang.reflect.Method;
@@ -53,6 +49,7 @@ import net.minecraft.entity.ai.attributes.IAttributeInstance;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.monster.EntityMob;
 import net.minecraft.entity.passive.EntityChicken;
+import net.minecraft.entity.passive.EntityHorse;
 import net.minecraft.entity.passive.EntitySquid;
 import net.minecraft.entity.passive.EntityTameable;
 import net.minecraft.entity.player.EntityPlayer;
@@ -916,7 +913,7 @@ public class LMM_EntityLittleMaid extends EntityTameable implements ITextureEnti
 
 	@Override
 	public boolean attackEntityAsMob(Entity par1Entity) {
-		
+
 		// 正常時は回復優先処理
 		if (getHealth() < 10 && !isBloodsuck() && maidInventory.hasItem(Items.sugar)) {
 			return true;
@@ -1179,6 +1176,20 @@ public class LMM_EntityLittleMaid extends EntityTameable implements ITextureEnti
 		}
 	}
 
+	public boolean canBePushed()
+	{
+		// --------------------------------------------
+		// 肩車状態でプレイヤーが馬に乗っているときは、当たり判定をなくす。
+		if (ridingEntity != null && ridingEntity == mstatMasterEntity) {
+			if(ridingEntity.ridingEntity instanceof EntityHorse)
+			{
+				return false;
+			}
+		}
+		// --------------------------------------------
+
+		return !this.isDead;
+	}
 
 	// おんぶおばけは無敵
 	@Override
@@ -1220,7 +1231,26 @@ public class LMM_EntityLittleMaid extends EntityTameable implements ITextureEnti
 //			mstatAimeBow = true;
 //			updateAimebow();
 //			return (double)(yOffset - 1.8F);
-			return (double)(yOffset - 2.0F);
+
+			// --------------------------------------------
+			// プレイヤーが馬に乗っているときは、肩車ではなく馬の後ろに乗る
+			if(ridingEntity.ridingEntity instanceof EntityHorse)
+			{
+				if(this.worldObj.isRemote)
+				{
+					return (double)(yOffset - 2.8F);
+				}
+				else
+				{
+					return (double)(yOffset - 1.0F);
+				}
+			}
+			// プレイヤーに肩車
+			else
+			{
+				return (double)(yOffset - 2.0F);
+			}
+			// --------------------------------------------
 		}
 		return (double)(yOffset - 0.25F);
 	}
@@ -1256,9 +1286,31 @@ public class LMM_EntityLittleMaid extends EntityTameable implements ITextureEnti
 			if (((rotationYawHead - renderYawOffset) % 360F) < -90F) {
 				rotationYawHead = renderYawOffset - 90F;
 			}
+
+			double dx, dz;
+			// --------------------------------------------
+			// プレイヤーが馬に乗っているときは、肩車ではなく馬の後ろに乗る
+			if(ridingEntity.ridingEntity instanceof EntityHorse)
+			{
+				EntityHorse horse = (EntityHorse)ridingEntity.ridingEntity;
+				if(this.worldObj.isRemote)
+				{
+					dx = Math.sin(((double)horse.renderYawOffset * Math.PI) / 180D) * 0.5;
+					dz = Math.cos(((double)horse.renderYawOffset * Math.PI) / 180D) * 0.5;
+				}
+				else
+				{
+					dx = Math.sin(((double)horse.renderYawOffset * Math.PI) / 180D) * 0.9;
+					dz = Math.cos(((double)horse.renderYawOffset * Math.PI) / 180D) * 0.9;
+				}
+			}
+			else
+			{
+				dx = Math.sin(((double)lep.renderYawOffset * Math.PI) / 180D) * 0.35;
+				dz = Math.cos(((double)lep.renderYawOffset * Math.PI) / 180D) * 0.35;
+			}
+			// --------------------------------------------
 			
-			double dx = Math.sin(((double)lep.renderYawOffset * Math.PI) / 180D) * 0.35D;
-			double dz = Math.cos(((double)lep.renderYawOffset * Math.PI) / 180D) * 0.35D;
 			setPosition(lep.posX + dx, posY, lep.posZ - dz);
 			lastTickPosX = llpx;
 			lastTickPosY = llpy;
@@ -1367,6 +1419,16 @@ public class LMM_EntityLittleMaid extends EntityTameable implements ITextureEnti
 	@Override
 	public boolean attackEntityFrom(DamageSource par1DamageSource, float par2) {
 		Entity entity = par1DamageSource.getEntity();
+		
+		if(par1DamageSource.getDamageType().equalsIgnoreCase("thrown"))
+		{
+			if(entity!=null && this.maidAvatar!=null && entity.getEntityId()==this.maidAvatar.getEntityId())
+			{
+				return false;
+			}
+		}
+		
+		LMM_LittleMaidMobX.Debug("LMM_EntityLittleMaid.attackEntityFrom "+this+"("+this.maidAvatar+") <= "+entity);
 		
 		// ダメージソースを特定して音声の設定
 		maidDamegeSound = LMM_EnumSound.hurt;

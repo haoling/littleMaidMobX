@@ -1,23 +1,31 @@
 package wrapper;
 
-import com.mojang.authlib.GameProfile;
-
 import net.minecraft.client.renderer.tileentity.TileEntitySkullRenderer;
+import cpw.mods.fml.common.Loader;
 
 // バージョン差分吸収をおこなう。
-// JAVAで#ifdef って使えないの？
-
 public class W_Client
 {
+	private static W_IClient instance = getInstance();
+	
+	private static W_IClient getInstance()
+	{
+		if(Loader.MC_VERSION.equalsIgnoreCase("1.7.2"))
+		{
+			return new wrapper.mc172.W_CClient();
+		}
+		else if(Loader.MC_VERSION.equalsIgnoreCase("1.7.10"))
+		{
+			return new wrapper.mc1710.W_CClient();
+		}
+		return null;
+	}
+	
 	public static void renderSkeletonHead(TileEntitySkullRenderer skullRenderer,
-			float p_147530_1_, float p_147530_2_, float p_147530_3_,
+			float x, float y, float z,
 			int p_147530_4_, float p_147530_5_, int p_147530_6_,
 			String p_147530_7_)
 	{
-		// 1.7.10
-		// TODO ★
-		skullRenderer.func_152674_a(p_147530_1_, p_147530_2_, p_147530_3_, p_147530_4_, p_147530_5_, p_147530_6_, null);
-		// 1.7.2
-//		skullRenderer.func_147530_a(p_147530_1_, p_147530_2_, p_147530_3_, p_147530_4_, p_147530_5_, p_147530_6_, p_147530_7_);
+		instance.renderSkeletonHead(skullRenderer, x, y, z, p_147530_4_, p_147530_5_, p_147530_6_, p_147530_7_);
 	}
 }

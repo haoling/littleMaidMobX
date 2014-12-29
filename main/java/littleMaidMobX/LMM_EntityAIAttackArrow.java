@@ -8,10 +8,12 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityCreature;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.ai.EntityAIBase;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Items;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemFood;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.MathHelper;
 import net.minecraft.world.World;
 
 public class LMM_EntityAIAttackArrow extends EntityAIBase implements LMM_IEntityAI {
@@ -74,6 +76,21 @@ public class LMM_EntityAIAttackArrow extends EntityAIBase implements LMM_IEntity
 
 	@Override
 	public void updateTask() {
+
+		double backupPosX = fMaid.posX;
+		double backupPosZ = fMaid.posZ;
+		
+		// プレイヤーに乗っていると射線にプレイヤーが入り、撃てなくなるため僅かに目標エンティティに近づける
+		// 関数を抜ける前に元に戻す必要があるので途中で return しないこと
+		if(fMaid.ridingEntity instanceof EntityPlayer)
+		{
+			double dtx = fTarget.posX - fMaid.posX;
+			double dtz = fTarget.posZ - fMaid.posZ;
+			double distTarget = MathHelper.sqrt_double(dtx*dtx + dtz*dtz);
+			fMaid.posX += dtx / distTarget * 1.0;	// 1m 目標に近づける
+			fMaid.posZ += dtz / distTarget * 1.0;	// 1m 目標に近づける
+		}
+		
 		double lrange = 225D;
 		double ldist = fMaid.getDistanceSqToEntity(fTarget);
 		boolean lsee = fMaid.getEntitySenses().canSee(fTarget);
@@ -284,6 +301,10 @@ public class LMM_EntityAIAttackArrow extends EntityAIBase implements LMM_IEntity
 			
 		}
 		
+
+		// プレイヤーが射線に入らないように、変更したメイドさんの位置を元に戻す
+		fMaid.posX = backupPosX;
+		fMaid.posZ = backupPosZ;
 	}
 
 	@Override
