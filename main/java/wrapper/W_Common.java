@@ -18,15 +18,16 @@ import cpw.mods.fml.common.Loader;
 
 public class W_Common
 {
-	private static W_ICommon instance = getInstance();
+	private static final W_ICommon instance = getInstance();
 	
 	private static W_ICommon getInstance()
 	{
-		if(Loader.MC_VERSION.equalsIgnoreCase("1.7.2"))
+		final String VER = Loader.instance().getMCVersionString();
+		if(VER.endsWith("1.7.2"))
 		{
 			return new wrapper.mc172.W_CCommon();
 		}
-		else if(Loader.MC_VERSION.equalsIgnoreCase("1.7.10"))
+		else if(VER.endsWith("1.7.10"))
 		{
 			return new wrapper.mc1710.W_CCommon();
 		}

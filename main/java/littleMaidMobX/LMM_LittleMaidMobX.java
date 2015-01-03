@@ -22,8 +22,7 @@ import cpw.mods.fml.common.registry.EntityRegistry;
 import cpw.mods.fml.common.registry.GameRegistry;
 
 @Mod(	modid = LMM_LittleMaidMobX.DOMAIN,
-		name  = LMM_LittleMaidMobX.DOMAIN,
-		dependencies="required-after:Forge@[10.13.2.1230,)")
+		name  = LMM_LittleMaidMobX.DOMAIN)
 public class LMM_LittleMaidMobX {
 	
 	public static final String DOMAIN = "lmmx";

@@ -1,7 +1,6 @@
 package wrapper.mc172;
 
-import net.minecraft.command.ICommand;
-import net.minecraft.command.ICommandSender;
+import net.minecraft.command.*;
 import net.minecraft.entity.IEntityOwnable;
 import net.minecraft.entity.passive.EntityTameable;
 import wrapper.W_ICommon;

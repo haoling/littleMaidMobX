@@ -24,8 +24,8 @@ import cpw.mods.fml.relauncher.Side;
 		version	= "1.7.x-srg-1")
 public class MMMLib {
 
-	public static final boolean cfg_isModelAlphaBlend = true;
-	public static final int cfg_startVehicleEntityID = 0;
+	public static boolean cfg_isModelAlphaBlend = true;
+/**	public static final int cfg_startVehicleEntityID = 0;	Forgeには不要	*/
 	public static boolean isDebugMessage = true;
 	public static boolean isModelAlphaBlend = true;
 
@@ -60,6 +60,7 @@ public class MMMLib {
 		lconf.load();
 		isDebugMessage		= lconf.get("MMMLib", "isDebugMessage", false).getBoolean(false);
 		isModelAlphaBlend	= lconf.get("MMMLib", "isModelAlphaBlend", true).getBoolean(true);
+		cfg_isModelAlphaBlend = isModelAlphaBlend;
 		
 		String ls;
 /* TODO ★

@@ -6,15 +6,16 @@ import cpw.mods.fml.common.Loader;
 // バージョン差分吸収をおこなう。
 public class W_Client
 {
-	private static W_IClient instance = getInstance();
+	private static final W_IClient instance = getInstance();
 	
 	private static W_IClient getInstance()
 	{
-		if(Loader.MC_VERSION.equalsIgnoreCase("1.7.2"))
+		final String VER = Loader.instance().getMCVersionString();
+		if(VER.equalsIgnoreCase("1.7.2"))
 		{
 			return new wrapper.mc172.W_CClient();
 		}
-		else if(Loader.MC_VERSION.equalsIgnoreCase("1.7.10"))
+		else if(VER.equalsIgnoreCase("1.7.10"))
 		{
 			return new wrapper.mc1710.W_CClient();
 		}

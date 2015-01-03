@@ -244,6 +244,7 @@ public class MMM_Helper {
 	 * Modloader環境下で空いているEntityIDを返す。
 	 * 有効な値を獲得できなければ-1を返す。
 	 */
+	/*
 	private static int getNextEntityID(boolean isLiving) {
 		if (isLiving) {
 			// 生物用
@@ -262,6 +263,7 @@ public class MMM_Helper {
 		}
 		return -1;
 	}
+	*/
 
 	/**
 	 * Entityを登録する。
