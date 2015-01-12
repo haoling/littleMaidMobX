@@ -238,9 +238,15 @@ public class MMM_TextureData  {
 	 * 毎時処理
 	 */
 	public void onUpdate() {
-		// モデルサイズのリアルタイム変更有り？
-		if (textureBox[0].isUpdateSize) {
-			setSize();
+		
+		// 不具合対応
+		// http://forum.minecraftuser.jp/viewtopic.php?f=13&t=23347&start=160#p210319
+		if(textureBox!=null && textureBox.length>0)
+		{
+			// モデルサイズのリアルタイム変更有り？
+			if (textureBox[0].isUpdateSize) {
+				setSize();
+			}
 		}
 	}
 
