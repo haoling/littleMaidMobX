@@ -14,9 +14,9 @@ littleMaidMob.mode.F-Fencer=自由剣士
 littleMaidMob.mode.Bloodsucker=血に飢えた冥土
 littleMaidMob.mode.F-Bloodsucker=通魔冥土
 littleMaidMob.mode.Ripper=毛狩り隊
-littleMaidMob.mode.F-Ripper=毛狩り隊
-littleMaidMob.mode.D-Ripper=毛狩り隊
-littleMaidMob.mode.T-Ripper=毛狩り隊
+littleMaidMob.mode.F-Ripper=自由毛狩り隊
+littleMaidMob.mode.D-Ripper=神速毛狩り隊
+littleMaidMob.mode.T-Ripper=赤石探知毛狩り隊
 //littleMaidMob.mode.TNT-D=TNT-D
 
 littleMaidMob.text.AP=メイド装甲

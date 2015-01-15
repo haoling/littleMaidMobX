@@ -42,6 +42,13 @@ public class LMM_EntityAIAvoidPlayer extends EntityAIBase implements
 
 		theMaster = theMaid.mstatMasterEntity;
 
+		// 不具合対策：プレイヤーがログアウトすると theMaster がNULLになって以降の処理でクラッシュ
+		// http://forum.minecraftuser.jp/viewtopic.php?f=13&t=23347&start=180#p211806
+		if(theMaster==null)
+		{
+			return false;
+		}
+
 		// 対象は見えるか？てかこれいらなくね？
 		if (!theMaid.getEntitySenses().canSee(theMaster)) {
 			return false;
@@ -72,6 +79,7 @@ public class LMM_EntityAIAvoidPlayer extends EntityAIBase implements
 
 	@Override
 	public boolean continueExecuting() {
+		if(theMaster==null) return false;
 		return !entityPathNavigate.noPath() && theMaid.getDistanceSqToEntity(theMaster) < 144D;
 	}
 

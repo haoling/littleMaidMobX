@@ -2108,7 +2108,13 @@ public class LMM_EntityLittleMaid extends EntityTameable implements ITextureEnti
 						}
 					}
 				}
-				String lt = func_145748_c_().getFormattedText();
+				
+				// 不具合対応
+				// getFormattedText → getUnformattedTextForChat
+				// getFormattedText はクライアント専用（描画用）。
+				// http://forum.minecraftuser.jp/viewtopic.php?f=13&t=23347&p=212078#p211805
+				String lt = func_145748_c_().getUnformattedTextForChat();
+
 				ChatComponentText text = new ChatComponentText(String.format("your %s killed by %s", lt, ls));
 				mstatMasterEntity.addChatMessage(text);
 			}

@@ -97,7 +97,17 @@ public class MMM_TextureBox extends MMM_TextureBoxBase {
 		if (itemstack.getMaxDamage() > 0) {
 			l = (10 * itemstack.getItemDamage() / itemstack.getMaxDamage());
 		}
-		return getArmorTextureName(pIndex, MMM_TextureManager.armorFilenamePrefix[((ItemArmor)itemstack.getItem()).renderIndex], l);
+		
+		// 不具合修正
+		// 他MODの影響と思われるが、インデックスがarmorFilenamePrefixのサイズをオーバーしクラッシュすることがあるので丸める
+		// http://forum.minecraftuser.jp/viewtopic.php?f=13&t=23347&start=160#p211172
+		int renderIndex = ((ItemArmor)itemstack.getItem()).renderIndex;
+		if(renderIndex >= MMM_TextureManager.armorFilenamePrefix.length && MMM_TextureManager.armorFilenamePrefix.length > 0)
+		{
+			renderIndex = renderIndex % MMM_TextureManager.armorFilenamePrefix.length;
+		}
+		
+		return getArmorTextureName(pIndex, MMM_TextureManager.armorFilenamePrefix[renderIndex], l);
 	}
 	public ResourceLocation getArmorTextureName(int pIndex, String pArmorPrefix, int pDamage) {
 		// indexは0x40,0x50番台
