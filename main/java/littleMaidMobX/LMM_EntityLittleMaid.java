@@ -1271,6 +1271,7 @@ public class LMM_EntityLittleMaid extends EntityTameable implements ITextureEnti
 			double llpy = lastTickPosY;
 			double llpz = lastTickPosZ;
 			
+			// ★注意：水に触れると ridingEntity はnullになる ★
 			super.updateRidden();
 			
 			renderYawOffset = lep.renderYawOffset;
@@ -1290,9 +1291,10 @@ public class LMM_EntityLittleMaid extends EntityTameable implements ITextureEnti
 			double dx, dz;
 			// --------------------------------------------
 			// プレイヤーが馬に乗っているときは、肩車ではなく馬の後ろに乗る
-			if(ridingEntity.ridingEntity instanceof EntityHorse)
+			// ridingEntity はsuper.updateRidden();によってNULLになる事があるので注意
+			if(lep.ridingEntity instanceof EntityHorse)
 			{
-				EntityHorse horse = (EntityHorse)ridingEntity.ridingEntity;
+				EntityHorse horse = (EntityHorse)lep.ridingEntity;
 				if(this.worldObj.isRemote)
 				{
 					dx = Math.sin(((double)horse.renderYawOffset * Math.PI) / 180D) * 0.5;
