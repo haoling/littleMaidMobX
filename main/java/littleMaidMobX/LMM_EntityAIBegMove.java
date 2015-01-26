@@ -38,11 +38,20 @@ public class LMM_EntityAIBegMove extends EntityAIBase {
 	
 	@Override
 	public void updateTask() {
-		// 這い寄れ！
-		if (theMaid.aiBeg.getDistanceSq() < 3.5D) {
-			theMaid.getNavigator().clearPathEntity();
-		} else {
-			theMaid.getNavigator().tryMoveToEntityLiving(thePlayer, moveSpeed);
+		// 不具合対応。再現しないので取り敢えずクラッシュ対策。
+		// http://forum.minecraftuser.jp/viewtopic.php?f=13&t=23347&start=220
+		try
+		{
+			// 這い寄れ！
+			if (theMaid.aiBeg.getDistanceSq() < 3.5D) {
+				theMaid.getNavigator().clearPathEntity();
+			} else {
+				theMaid.getNavigator().tryMoveToEntityLiving(thePlayer, moveSpeed);
+			}
+		}
+		catch(Exception e)
+		{
+			e.printStackTrace();
 		}
 	}
 	

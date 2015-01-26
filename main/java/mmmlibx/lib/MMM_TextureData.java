@@ -241,7 +241,7 @@ public class MMM_TextureData  {
 		
 		// 不具合対応
 		// http://forum.minecraftuser.jp/viewtopic.php?f=13&t=23347&start=160#p210319
-		if(textureBox!=null && textureBox.length>0)
+		if(textureBox!=null && textureBox.length>0 && textureBox[0]!=null)
 		{
 			// モデルサイズのリアルタイム変更有り？
 			if (textureBox[0].isUpdateSize) {
@@ -252,20 +252,23 @@ public class MMM_TextureData  {
 
 	protected void setSize() {
 		
-		// サイズの変更
-//		owner.setSize(textureBox[0].getWidth(entityCaps), textureBox[0].getHeight(entityCaps));
-		if(owner instanceof LMM_EntityLittleMaid)
+		if(textureBox!=null && textureBox.length>0 && textureBox[0]!=null)
 		{
-			((LMM_EntityLittleMaid)owner).setSize2(textureBox[0].getWidth(entityCaps), textureBox[0].getHeight(entityCaps));
-		}
-		else if(owner instanceof MMM_EntitySelect)
-		{
-			((MMM_EntitySelect)owner).setSize2(textureBox[0].getWidth(entityCaps), textureBox[0].getHeight(entityCaps));
-		}
-		
-		if (owner instanceof EntityAgeable) {
-			// EntityAgeableはこれをしないと大きさ変更しないようになってる、くそう。
-			((EntityAgeable)owner).setScaleForAge(owner.isChild());
+			// サイズの変更
+	//		owner.setSize(textureBox[0].getWidth(entityCaps), textureBox[0].getHeight(entityCaps));
+			if(owner instanceof LMM_EntityLittleMaid)
+			{
+				((LMM_EntityLittleMaid)owner).setSize2(textureBox[0].getWidth(entityCaps), textureBox[0].getHeight(entityCaps));
+			}
+			else if(owner instanceof MMM_EntitySelect)
+			{
+				((MMM_EntitySelect)owner).setSize2(textureBox[0].getWidth(entityCaps), textureBox[0].getHeight(entityCaps));
+			}
+			
+			if (owner instanceof EntityAgeable) {
+				// EntityAgeableはこれをしないと大きさ変更しないようになってる、くそう。
+				((EntityAgeable)owner).setScaleForAge(owner.isChild());
+			}
 		}
 	}
 
