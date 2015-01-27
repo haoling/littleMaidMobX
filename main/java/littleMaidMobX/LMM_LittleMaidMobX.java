@@ -6,10 +6,12 @@ import mmmlibx.lib.MMM_Helper;
 import mmmlibx.lib.MMM_TextureManager;
 import net.minecraft.entity.EnumCreatureType;
 import net.minecraft.init.Items;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.stats.Achievement;
 import net.minecraft.world.biome.BiomeGenBase;
 import net.minecraftforge.common.AchievementPage;
+import net.minecraftforge.common.MinecraftForge;
 import network.W_Network;
 import cpw.mods.fml.common.Mod;
 import cpw.mods.fml.common.Mod.EventHandler;
@@ -42,6 +44,7 @@ public class LMM_LittleMaidMobX {
 		"DeathMessage = Print Death Massages.",
 		"Dominant = Spawn Anywhere.",
 		"Aggressive = true: Will be hostile, false: Is a pacifist",
+		"IgnoreItemList = aaa, bbb, ccc: Items little maid to ignore",
 //		"AchievementID = used Achievement index.(0 = Disable)",
 //		"UniqueEntityId = UniqueEntityId(0 is AutoAssigned. max 255)"
 	};
@@ -79,6 +82,7 @@ public class LMM_LittleMaidMobX {
 //	public static boolean AlphaBlend = true;
 //	@MLProp(info="true: Will be hostile, false: Is a pacifist")
 	public static boolean cfg_Aggressive = true;
+	public static String cfg_IgnoreItemList = "arsmagica2";
 
 	public static Achievement ac_Contract;
 	
@@ -186,6 +190,12 @@ public class LMM_LittleMaidMobX {
 	@EventHandler
 	public void postInit(FMLPostInitializationEvent evt)
 	{
+		// カンマ区切りのアイテム名のリストを配列にして設定
+		// "aaa, bbb,ccc  " -> "aaa" "bbb" "ccc"
+		ignoreItemList = cfg_IgnoreItemList.split("\\s*,\\s*");
+		
+		MinecraftForge.EVENT_BUS.register(new LMM_EventHook());
+		
 		// デフォルトモデルの設定
 		MMM_TextureManager.instance.setDefaultTexture(LMM_EntityLittleMaid.class, MMM_TextureManager.instance.getTextureBox("default_Orign"));
 		
@@ -230,4 +240,29 @@ public class LMM_LittleMaidMobX {
 		// IFFのロード
 		LMM_IFF.loadIFFs();
 	}
+	
+
+	// 特定のMODのアイテムを持つとクラッシュする不具合対策====================================
+	private static String ignoreItemList[] = new String[]{};
+
+	public static boolean isMaidIgnoreItem(ItemStack item)
+	{
+		return item!=null && item.getItem()!=null && isMaidIgnoreItem(item.getItem());
+	}
+	public static boolean isMaidIgnoreItem(Item item)
+	{
+		if(item!=null)
+		{
+			String name = Item.itemRegistry.getNameForObject(item);
+			for(String ignoreItemName : ignoreItemList)
+			{
+				if(name.indexOf(ignoreItemName) != -1)
+				{
+					return true;
+				}
+			}
+		}
+		return false;
+	}
+	// 特定のMODのアイテムを持つとクラッシュする不具合対策====================================
 }

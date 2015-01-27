@@ -19,8 +19,6 @@ import net.minecraft.util.IChatComponent;
 import net.minecraft.util.MathHelper;
 import net.minecraft.world.World;
 
-import com.mojang.authlib.GameProfile;
-
 
 public class LMM_EntityLittleMaidAvatar extends EntityPlayer {
 
