@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import com.google.common.collect.Lists;
 import mmmlibx.lib.MMMLib;
 import net.minecraft.launchwrapper.IClassTransformer;
 
@@ -66,12 +67,22 @@ public class MMMTransformer implements IClassTransformer, Opcodes {
 		}
 	}
 
+	public static List<String> ignoreNameSpace = Lists.newArrayList(
+		"modchu.model",
+		"modchu.lib",
+		"net.minecraft.src.mod_Modchu_ModchuLib",
+		"modchu.pflm",
+		"modchu.pflmf");	
+
 	@Override
 	public byte[] transform(String name, String transformedName, byte[] basicClass) {
 
-
 		// TODO ★ MMMLibが立ち上がった時点で旧モデル置き換えを開始
 		MMMTransformer.isEnable = true;
+
+		for(String header : ignoreNameSpace){
+			if(name.startsWith(header))	return basicClass;
+		}
 		
 		if (basicClass != null && isEnable) {
 			return replacer(name, transformedName, basicClass);

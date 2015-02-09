@@ -192,7 +192,7 @@ public class LMM_LittleMaidMobX {
 	{
 		// カンマ区切りのアイテム名のリストを配列にして設定
 		// "aaa, bbb,ccc  " -> "aaa" "bbb" "ccc"
-		ignoreItemList = cfg_IgnoreItemList.split("\\s*,\\s*");
+		ignoreItemList = cfg_IgnoreItemList.trim().split("\\s*,\\s*");
 		
 		MinecraftForge.EVENT_BUS.register(new LMM_EventHook());
 		
