@@ -25,7 +25,7 @@ public class LMM_EntityMode_Basic extends LMM_EntityModeBlockBase {
 
 	public static final int mmode_Wild		= 0x0000;
 	public static final int mmode_Escorter	= 0x0001;
-
+	
 	private IInventory myInventory;
 	private IInventory myChest;
 	private List<IInventory> fusedTiles;
@@ -33,9 +33,9 @@ public class LMM_EntityMode_Basic extends LMM_EntityModeBlockBase {
 	private double lastdistance;
 	private int maidSearchCount;
 
-
+	
 	/**
-	 * Wild, Escorter
+	 * Wild, Escorter 
 	 */
 	public LMM_EntityMode_Basic(LMM_EntityLittleMaid pEntity) {
 		super(pEntity);
@@ -48,7 +48,7 @@ public class LMM_EntityMode_Basic extends LMM_EntityModeBlockBase {
 		// TODO Auto-generated method stub
 		return 9000;
 	}
-
+	
 	@Override
 	public void init() {
 		/* langファイルに移動
@@ -98,7 +98,7 @@ public class LMM_EntityMode_Basic extends LMM_EntityModeBlockBase {
 		ltasks[0] = pDefaultMove;
 		ltasks[1] = pDefaultTargeting;
 		owner.addMaidMode(ltasks, "Escorter", mmode_Escorter);
-
+		
 	}
 
 	@Override
@@ -107,7 +107,7 @@ public class LMM_EntityMode_Basic extends LMM_EntityModeBlockBase {
 		owner.setMaidMode("Escorter");
 		return true;
 	}
-
+	
 	@Override
 	public boolean setMode(int pMode) {
 		switch (pMode) {
@@ -125,12 +125,12 @@ public class LMM_EntityMode_Basic extends LMM_EntityModeBlockBase {
 //		owner.getNavigator().clearPathEntity()
 		return false;
 	}
-
+	
 	@Override
 	public int getNextEquipItem(int pMode) {
 		return pMode == mmode_Wild ? 0 : -1;
 	}
-
+	
 	@Override
 	public boolean checkItemStack(ItemStack pItemStack) {
 		return true;
@@ -164,7 +164,7 @@ public class LMM_EntityMode_Basic extends LMM_EntityModeBlockBase {
 			// インベントリのサイズが１８以下なら対象としない。
 			return false;
 		}
-
+		
 		// 世界のメイドから
 		if (checkWorldMaid(ltile)) return false;
 		// 使用済みチェック
@@ -172,7 +172,7 @@ public class LMM_EntityMode_Basic extends LMM_EntityModeBlockBase {
 			// 既に通り過ぎた場所よッ！
 			return false;
 		}
-
+		
 		double ldis = owner.getDistanceTilePosSq(ltile);
 		if (fDistance > ldis) {
 			myInventory = (IInventory)ltile;
@@ -194,7 +194,7 @@ public class LMM_EntityMode_Basic extends LMM_EntityModeBlockBase {
 				}
 				double lr = lentity.getDistanceSqToEntity(owner);
 				// 見える位置にある最も近い調べていないカートチェスト
-
+				
 				if (fDistance > lr && owner.getEntitySenses().canSee(lentity)) {
 					myInventory = (IInventory)lentity;
 					fDistance = lr;
@@ -328,14 +328,14 @@ public class LMM_EntityMode_Basic extends LMM_EntityModeBlockBase {
 			fusedTiles.add(lchest.adjacentChestZNeg);
 			fusedTiles.add(lchest.adjacentChestZPos);
 		}
-
+		
 		TileEntity ltile = (TileEntity)myInventory;
 		Block lblock = owner.worldObj.getBlock(ltile.xCoord, ltile.yCoord, ltile.zCoord);
 		myChest = myInventory;
 		if (lblock instanceof BlockChest) {
 			myChest = ((BlockChest)lblock).func_149951_m(owner.worldObj, ltile.xCoord, ltile.yCoord, ltile.zCoord);
 		}
-
+		
 		return myChest != null;
 	}
 
@@ -378,7 +378,7 @@ public class LMM_EntityMode_Basic extends LMM_EntityModeBlockBase {
 							is.stackSize = isc.stackSize - isc.getMaxStackSize();
 							isc.stackSize = isc.getMaxStackSize();
 						} else {
-							is.stackSize = 0;
+							is.stackSize = 0; 
 							break;
 						}
 					}
@@ -480,7 +480,7 @@ public class LMM_EntityMode_Basic extends LMM_EntityModeBlockBase {
 						if (pitemstack.getItem() instanceof ItemAppleGold) {
 							// ゴールデンアッポー
 							if(!owner.worldObj.isRemote) {
-								((ItemAppleGold)pitemstack.getItem()).onEaten(pitemstack, owner.worldObj, (EntityPlayer) owner.maidAvatar);
+								((ItemAppleGold)pitemstack.getItem()).onEaten(pitemstack, owner.worldObj, owner.maidAvatar);
 							}
 // TODO ★ onEatenに変えたのでいらない？		MMM_Helper.decPlayerInventory(pentityplayer, -1, 1);
 							return true;

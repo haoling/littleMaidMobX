@@ -7,7 +7,6 @@ import mmmlibx.lib.MMM_Helper;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockTNT;
 import net.minecraft.block.material.Material;
-import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.init.Items;
@@ -41,7 +40,7 @@ public class LMM_InventoryLittleMaid extends InventoryPlayer {
 	public ItemStack prevItems[];
 
 	public LMM_InventoryLittleMaid(LMM_EntityLittleMaid par1EntityLittleMaid) {
-		super((EntityPlayer) par1EntityLittleMaid.maidAvatar);
+		super(par1EntityLittleMaid.maidAvatar);
 
 		entityLittleMaid = par1EntityLittleMaid;
 		mainInventory = new ItemStack[maxInventorySize];
@@ -102,7 +101,7 @@ public class LMM_InventoryLittleMaid extends InventoryPlayer {
 							entityLittleMaid, li, this.currentItem == li);
 				} catch (ClassCastException e) {
 					this.mainInventory[li].updateAnimation(this.player.worldObj,
-							(Entity) entityLittleMaid.maidAvatar, li, this.currentItem == li);
+							entityLittleMaid.maidAvatar, li, this.currentItem == li);
 				}
 			}
 		}
@@ -168,7 +167,7 @@ public class LMM_InventoryLittleMaid extends InventoryPlayer {
 			lexp.isFlaming = false;
 			lexp.isSmoking = entityLittleMaid.worldObj.getGameRules().getGameRuleBooleanValue("mobGriefing");
 		}
-
+		
 		armorInventory[3] = null;
 		for (int i = 0; i < getSizeInventory(); i++) {
 			ItemStack it = getStackInSlot(i);
@@ -368,7 +367,7 @@ public class LMM_InventoryLittleMaid extends InventoryPlayer {
 	}
 
 	public static boolean isItemBurned(ItemStack pItemstack) {
-		return (pItemstack != null &&
+		return (pItemstack != null && 
 				TileEntityFurnace.getItemBurnTime(pItemstack) > 0);
 	}
 

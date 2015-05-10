@@ -1,7 +1,6 @@
 package littleMaidMobX;
 
 import java.util.Collection;
-import java.util.Random;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityCreature;
@@ -22,8 +21,8 @@ import wrapper.W_Common;
 
 
 
-public class LMM_EntityLittleMaidAvatar extends EntityPlayer implements LMM_IEntityLittleMaidAvatarBase{
-
+public class LMM_EntityLittleMaidAvatar extends EntityPlayer implements LMM_IEntityLittleMaidAvatarBase
+{
 	public LMM_EntityLittleMaid avatar;
 	/** いらん？ **/
 	public boolean isItemTrigger;
@@ -35,23 +34,21 @@ public class LMM_EntityLittleMaidAvatar extends EntityPlayer implements LMM_IEnt
 	private double appendY;
 	private double appendZ;
 
-	private static Random debugRandom = new Random();
-
 
 	public LMM_EntityLittleMaidAvatar(World par1World)
 	{
 		super(par1World, W_Common.newGameProfile("1", "LMM_EntityLittleMaidAvatar"));
 	}
-
+	
 	public LMM_EntityLittleMaidAvatar(World par1World, LMM_EntityLittleMaid par2EntityLittleMaid) {
 		super(par1World, W_Common.newGameProfile("1", "LMM_EntityLittleMaidAvatar"));
-
+		
 		// 初期設定
 		avatar = par2EntityLittleMaid;
 		dataWatcher = avatar.getDataWatcher();
-
+		
 		this.dataWatcher.addObject(LMM_Statics.dataWatch_AbsorptionAmount, Float.valueOf(0.0F));
-
+		
 		inventory = avatar.maidInventory;
 		inventory.player = this;
 	}
@@ -81,7 +78,7 @@ public class LMM_EntityLittleMaidAvatar extends EntityPlayer implements LMM_IEnt
 	public String getCommandSenderName(){ return super.getCommandSenderName(); }
 	public World getEntityWorld(){ return super.getEntityWorld(); }
 	////////////////////////////////////////////////////////////////////////////////////
-
+	
 	@Override
 	protected void applyEntityAttributes() {
 		// 初期設定殺し
@@ -121,11 +118,11 @@ public class LMM_EntityLittleMaidAvatar extends EntityPlayer implements LMM_IEnt
 //		posX = avatar.posX;
 		EntityPlayer lep = avatar.getMaidMasterEntity();
 		setEntityId(avatar.getEntityId());
-
+		
 		if (lep != null) {
 			capabilities.isCreativeMode = lep.capabilities.isCreativeMode;
 		}
-
+		
 		if (xpCooldown > 0) {
 			xpCooldown--;
 		}
@@ -264,6 +261,16 @@ public class LMM_EntityLittleMaidAvatar extends EntityPlayer implements LMM_IEnt
 	}
 	public boolean isUsingItemLittleMaid() {
 		return super.isUsingItem() | isItemTrigger;
+	}
+
+	@Override
+	public boolean getIsItemTrigger() {
+		return isItemTrigger;
+	}
+
+	@Override
+	public boolean getIsItemReload() {
+		return isItemReload;
 	}
 
 	public void clearItemInUse(int pIndex) {
@@ -535,7 +542,7 @@ public class LMM_EntityLittleMaidAvatar extends EntityPlayer implements LMM_IEnt
 		avatar.motionY = motionY;
 		avatar.motionZ = motionZ;
 		if (isSwingInProgress) avatar.setSwinging(LMM_EnumSound.Null);
-
+		
 	}
 
 	public void setValueVector() {
@@ -558,10 +565,10 @@ public class LMM_EntityLittleMaidAvatar extends EntityPlayer implements LMM_IEnt
 		if (isSwingInProgress) avatar.setSwinging(LMM_EnumSound.Null);
 	}
 
-	public void damageArmor(float par1){
+	public void W_damageArmor(float par1){
 		super.damageArmor(par1);
 	}
-
+	
 	public float applyArmorCalculations(DamageSource par1DamageSource, float par2)
 	{
 		return super.applyArmorCalculations(par1DamageSource, par2);
@@ -572,8 +579,18 @@ public class LMM_EntityLittleMaidAvatar extends EntityPlayer implements LMM_IEnt
 		return super.applyPotionDamageCalculations(par1DamageSource, par2);
 	}
 
-	public void damageEntity(DamageSource par1DamageSource, float par2)
+	public void W_damageEntity(DamageSource par1DamageSource, float par2)
 	{
 		super.damageEntity(par1DamageSource, par2);
+	}
+
+	@Override
+	public float W_applyArmorCalculations(DamageSource par1DamageSource, float par2) {
+		return applyArmorCalculations(par1DamageSource, par2);
+	}
+
+	@Override
+	public float W_applyPotionDamageCalculations(DamageSource par1DamageSource, float par2) {
+		return applyPotionDamageCalculations(par1DamageSource, par2);
 	}
 }

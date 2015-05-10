@@ -47,18 +47,18 @@ public class LMM_ProxyClient extends LMM_ProxyCommon
 
 // Avatarr
 	
-	public void onItemPickup(LMM_EntityLittleMaidAvatar pAvatar, Entity entity, int i) {
+	public void onItemPickup(EntityPlayer pAvatar, Entity entity, int i) {
 		// アイテム回収のエフェクト
 		// TODO:こっちを使うか？
 //        mc.effectRenderer.addEffect(new EntityPickupFX(mc.theWorld, entity, avatar, -0.5F));
-		MMM_Helper.mc.effectRenderer.addEffect(new EntityPickupFX(MMM_Helper.mc.theWorld, entity, pAvatar.avatar, 0.1F));
+		MMM_Helper.mc.effectRenderer.addEffect(new EntityPickupFX(MMM_Helper.mc.theWorld, entity, pAvatar, 0.1F));
 	}
 
-	public void onCriticalHit(LMM_EntityLittleMaidAvatar pAvatar, Entity par1Entity) {
+	public void onCriticalHit(EntityPlayer pAvatar, Entity par1Entity) {
 		MMM_Helper.mc.effectRenderer.addEffect(new EntityCrit2FX(MMM_Helper.mc.theWorld, par1Entity));
 	}
 
-	public void onEnchantmentCritical(LMM_EntityLittleMaidAvatar pAvatar, Entity par1Entity) {
+	public void onEnchantmentCritical(EntityPlayer pAvatar, Entity par1Entity) {
 		EntityCrit2FX entitycrit2fx = new EntityCrit2FX(MMM_Helper.mc.theWorld, par1Entity, "magicCrit");
 		MMM_Helper.mc.effectRenderer.addEffect(entitycrit2fx);
 	}

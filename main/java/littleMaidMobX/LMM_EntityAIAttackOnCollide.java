@@ -4,7 +4,6 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityCreature;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.ai.EntityAIBase;
-import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.EnumAction;
 import net.minecraft.item.ItemStack;
 import net.minecraft.pathfinding.PathEntity;
@@ -48,13 +47,13 @@ public class LMM_EntityAIAttackOnCollide extends EntityAIBase implements LMM_IEn
 				return false;
 			}
 		}
-
+		
 		entityTarget = lentity;
 		pathToTarget = theMaid.getNavigator().getPathToXYZ(entityTarget.posX, entityTarget.posY, entityTarget.posZ);
 //		pathToTarget = theMaid.getNavigator().getPathToEntityLiving(entityTarget);
 		attackRange = (double)theMaid.width + (double)entityTarget.width + 0.4D;
 		attackRange *= attackRange;
-
+		
 		if ((pathToTarget != null) || (theMaid.getDistanceSq(entityTarget.posX, entityTarget.boundingBox.minY, entityTarget.posZ) <= attackRange)) {
 			return true;
 		} else {
@@ -62,7 +61,7 @@ public class LMM_EntityAIAttackOnCollide extends EntityAIBase implements LMM_IEn
 			theMaid.setTarget(null);
 			return false;
 		}
-
+		
 	}
 
 	@Override
@@ -82,22 +81,22 @@ public class LMM_EntityAIAttackOnCollide extends EntityAIBase implements LMM_IEn
 		if (lentity == null || entityTarget != lentity) {
 			return false;
 		}
-
+		
 		if (entityTarget.isDead) {
 			theMaid.setAttackTarget(null);
 			theMaid.setTarget(null);
 			theMaid.getNavigator().clearPathEntity();
 			return false;
 		}
-
+		
 		if (!entityTarget.isEntityAlive()) {
 			return false;
 		}
-
+		
 		if (!isReroute) {
 			return !theMaid.getNavigator().noPath();
 		}
-
+		
 		return theMaid.isWithinHomeDistance(MathHelper.floor_double(entityTarget.posX), MathHelper.floor_double(entityTarget.posY), MathHelper.floor_double(entityTarget.posZ));
 	}
 
@@ -111,7 +110,7 @@ public class LMM_EntityAIAttackOnCollide extends EntityAIBase implements LMM_IEn
 	@Override
 	public void updateTask() {
 		theMaid.getLookHelper().setLookPositionWithEntity(entityTarget, 30F, 30F);
-
+		
 //		if ((isReroute || theMaid.getEntitySenses().canSee(entityTarget)) && --rerouteTimer <= 0) {
 //			// リルート
 //			rerouteTimer = 4 + theMaid.getRNG().nextInt(7);
@@ -132,7 +131,7 @@ public class LMM_EntityAIAttackOnCollide extends EntityAIBase implements LMM_IEn
 				theMaid.setTarget(null);
 			}
 		}
-
+		
 		boolean lguard = false;
 		if (theMaid.getDistanceSq(entityTarget.posX, entityTarget.boundingBox.minY, entityTarget.posZ) > attackRange) {
 			if (isGuard && theMaid.isMaskedMaid()) {
@@ -146,7 +145,7 @@ public class LMM_EntityAIAttackOnCollide extends EntityAIBase implements LMM_IEn
 				if (lel == theMaid) {
 					ItemStack li = theMaid.getCurrentEquippedItem();
 					if (li != null && li.getItemUseAction() == EnumAction.block) {
-						li.useItemRightClick(worldObj, (EntityPlayer) theMaid.maidAvatar);
+						li.useItemRightClick(worldObj, theMaid.maidAvatar);
 						lguard = true;
 					}
 				}
@@ -156,7 +155,7 @@ public class LMM_EntityAIAttackOnCollide extends EntityAIBase implements LMM_IEn
 		if (theMaid.maidAvatar.isUsingItem() && !lguard) {
 			theMaid.maidAvatar.stopUsingItem();
 		}
-
+		
 		if (!theMaid.getSwingStatusDominant().canAttack()) {
 			return;
 		} else {
@@ -170,7 +169,7 @@ public class LMM_EntityAIAttackOnCollide extends EntityAIBase implements LMM_IEn
 			if (ld < -0.35D) {
 				return;
 			}
-
+			
 			// 攻撃
 			theMaid.attackEntityAsMob(entityTarget);
 			if (theMaid.getActiveModeClass().isChangeTartget(entityTarget)) {
@@ -192,5 +191,5 @@ public class LMM_EntityAIAttackOnCollide extends EntityAIBase implements LMM_IEn
 	public boolean getEnable() {
 		return fEnable;
 	}
-
+	
 }

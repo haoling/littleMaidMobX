@@ -8,13 +8,13 @@ import network.W_Message;
 public class LMM_ProxyCommon
 {
 	public void init() {}
-	public void onItemPickup(LMM_IEntityLittleMaidAvatarBase lmm_EntityLittleMaidAvatar,Entity entity, int i) {}
-	public void onCriticalHit(LMM_IEntityLittleMaidAvatarBase pAvatar, Entity par1Entity) {}
-	public void onEnchantmentCritical(LMM_IEntityLittleMaidAvatarBase pAvatar, Entity par1Entity) {}
+	public void onItemPickup(EntityPlayer lmm_EntityLittleMaidAvatar,Entity entity, int i) {}
+	public void onCriticalHit(EntityPlayer pAvatar, Entity par1Entity) {}
+	public void onEnchantmentCritical(EntityPlayer pAvatar, Entity par1Entity) {}
 	public void clientCustomPayload(W_Message var2) {}
 	public EntityPlayer getClientPlayer(){ return null; }
 	public void loadSounds(){}
-
+	
 	public boolean isSinglePlayer()
 	{
 		return MinecraftServer.getServer().isSinglePlayer();
