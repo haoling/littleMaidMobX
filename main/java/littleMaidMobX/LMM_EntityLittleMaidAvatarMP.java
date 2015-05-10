@@ -8,21 +8,27 @@ import net.minecraft.entity.EntityCreature;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.ai.attributes.BaseAttributeMap;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.network.play.client.C15PacketClientSettings;
 import net.minecraft.potion.Potion;
 import net.minecraft.potion.PotionEffect;
+import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.management.ItemInWorldManager;
 import net.minecraft.stats.StatBase;
+import net.minecraft.stats.StatisticsFile;
 import net.minecraft.util.ChunkCoordinates;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.IChatComponent;
 import net.minecraft.util.MathHelper;
 import net.minecraft.world.World;
 import wrapper.W_Common;
+import cpw.mods.fml.common.FMLCommonHandler;
 
 
 
-public class LMM_EntityLittleMaidAvatar extends EntityPlayer implements LMM_IEntityLittleMaidAvatarBase{
+public class LMM_EntityLittleMaidAvatarMP extends EntityPlayerMP implements LMM_IEntityLittleMaidAvatarBase {
 
 	public LMM_EntityLittleMaid avatar;
 	/** いらん？ **/
@@ -38,13 +44,19 @@ public class LMM_EntityLittleMaidAvatar extends EntityPlayer implements LMM_IEnt
 	private static Random debugRandom = new Random();
 
 
-	public LMM_EntityLittleMaidAvatar(World par1World)
+	public LMM_EntityLittleMaidAvatarMP(World par1World)
 	{
-		super(par1World, W_Common.newGameProfile("1", "LMM_EntityLittleMaidAvatar"));
+		//super(par1World, W_Common.newGameProfile("1", "LMM_EntityLittleMaidAvatar"));
+		super(MinecraftServer.getServer(),
+				MinecraftServer.getServer().worldServerForDimension(par1World == null ? 0 : par1World.provider.dimensionId),
+				W_Common.newGameProfile("1", "LMM_EntityLittleMaidAvatar"),new ItemInWorldManager(par1World));
 	}
 
-	public LMM_EntityLittleMaidAvatar(World par1World, LMM_EntityLittleMaid par2EntityLittleMaid) {
-		super(par1World, W_Common.newGameProfile("1", "LMM_EntityLittleMaidAvatar"));
+	public LMM_EntityLittleMaidAvatarMP(World par1World, LMM_EntityLittleMaid par2EntityLittleMaid) {
+		//super(par1World, W_Common.newGameProfile("1", "LMM_EntityLittleMaidAvatar"));
+		super(MinecraftServer.getServer(),
+				MinecraftServer.getServer().worldServerForDimension(par1World == null ? 0 : par1World.provider.dimensionId),
+				W_Common.newGameProfile("1", "LMM_EntityLittleMaidAvatar"),new ItemInWorldManager(par1World));
 
 		// 初期設定
 		avatar = par2EntityLittleMaid;
@@ -575,5 +587,23 @@ public class LMM_EntityLittleMaidAvatar extends EntityPlayer implements LMM_IEnt
 	public void damageEntity(DamageSource par1DamageSource, float par2)
 	{
 		super.damageEntity(par1DamageSource, par2);
+		dataWatcher.updateObject(6, Math.max(dataWatcher.getWatchableObjectFloat(6)-par2,0));
+		//this.avatar.damageEntity(par1DamageSource, par2);
+	}
+
+	@Override public void addChatComponentMessage(IChatComponent chatmessagecomponent){}
+	@Override public void openGui(Object mod, int modGuiId, World world, int x, int y, int z){}
+	@Override public boolean isEntityInvulnerable(){ return true; }
+	@Override public boolean canAttackPlayer(EntityPlayer player){ return false; }
+	@Override public void onDeath(DamageSource source){ return; }
+	@Override public void travelToDimension(int dim){ return; }
+	@Override public void func_147100_a(C15PacketClientSettings pkt){ return; }
+
+	@Override
+	public StatisticsFile func_147099_x() {
+		if(this.avatar != null && this.avatar.getOwner() != null && this.avatar.getOwner() instanceof EntityPlayer){
+			return FMLCommonHandler.instance().getMinecraftServerInstance().getConfigurationManager().func_152602_a((EntityPlayer)this.avatar.getOwner());
+		}else
+			return super.func_147099_x();
 	}
 }

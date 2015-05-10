@@ -14,7 +14,7 @@ import net.minecraft.util.MathHelper;
 import net.minecraft.world.World;
 
 public class LMM_EntityMode_Torcher extends LMM_EntityModeBase {
-	
+
 	public static final int mmode_Torcher = 0x0020;
 
 
@@ -44,7 +44,7 @@ public class LMM_EntityMode_Torcher extends LMM_EntityModeBase {
 		EntityAITasks[] ltasks = new EntityAITasks[2];
 		ltasks[0] = pDefaultMove;
 		ltasks[1] = pDefaultTargeting;
-		
+
 		owner.addMaidMode(ltasks, "Torcher", mmode_Torcher);
 	}
 
@@ -69,7 +69,7 @@ public class LMM_EntityMode_Torcher extends LMM_EntityModeBase {
 			owner.aiShooting.setEnable(false);
 			return true;
 		}
-		
+
 		return false;
 	}
 
@@ -77,14 +77,14 @@ public class LMM_EntityMode_Torcher extends LMM_EntityModeBase {
 	public int getNextEquipItem(int pMode) {
 		int li;
 		ItemStack litemstack;
-		
+
 		// モードに応じた識別判定、速度優先
 		switch (pMode) {
-		case mmode_Torcher : 
+		case mmode_Torcher :
 			for (li = 0; li < owner.maidInventory.maxInventorySize; li++) {
 				litemstack = owner.maidInventory.getStackInSlot(li);
 				if (litemstack == null) continue;
-				
+
 				// 松明
 				if (litemstack.getItem() == Item.getItemFromBlock(Blocks.torch) || LMM_TriggerSelect.checkWeapon(owner.getMaidMaster(), "Torch", litemstack)) {
 					return li;
@@ -92,7 +92,7 @@ public class LMM_EntityMode_Torcher extends LMM_EntityModeBase {
 			}
 			break;
 		}
-		
+
 		return -1;
 	}
 
@@ -136,12 +136,12 @@ public class LMM_EntityMode_Torcher extends LMM_EntityModeBase {
 		/*
 		ItemStack lis = owner.getCurrentEquippedItem();
 		if (lis == null) return false;
-		
+
 		int li = lis.stackSize;
 		// TODO:当たり判定をどうするか
 		if (lis.tryPlaceItemIntoWorld(owner.maidAvatar, owner.worldObj, px, py - 1, pz, 1, 0.5F, 1.0F, 0.5F)) {
 			owner.setSwing(10, LMM_EnumSound.installation);
-			
+
 			if (owner.maidAvatar.capabilities.isCreativeMode) {
 				lis.stackSize = li;
 			}
@@ -158,7 +158,7 @@ public class LMM_EntityMode_Torcher extends LMM_EntityModeBase {
 			EntityPlayer par6EntityPlayer, ItemStack par7ItemStack, ItemBlock pItemBlock) {
 		// TODO:マルチ対策用、ItemBlockから丸パクリバージョンアップ時は確認すること
 		Block var8 = par1World.getBlock(par2, par3, par4);
-		
+
 		if (Block.isEqualTo(var8, Blocks.snow)) {
 			par5 = 1;
 		} else if (!Block.isEqualTo(var8, Blocks.vine) && !Block.isEqualTo(var8, Blocks.tallgrass) &&
@@ -182,12 +182,12 @@ public class LMM_EntityMode_Torcher extends LMM_EntityModeBase {
 				++par2;
 			}
 		}
-		
+
 		Material lmat = par1World.getBlock(par2, par3, par4).getMaterial();
 		if (lmat instanceof MaterialLiquid) {
 			return false;
 		}
-		
+
 		return par1World.canPlaceEntityOnSide(Block.getBlockFromItem(pItemBlock), par2, par3, par4, false, par5, (Entity)null, par7ItemStack);
 	}
 
@@ -199,7 +199,7 @@ public class LMM_EntityMode_Torcher extends LMM_EntityModeBase {
 			int lic = lis.stackSize;
 			Item lii = lis.getItem();
 			World lworld = owner.worldObj;
-			
+
 			// 周囲を検索
 			int lxx = MathHelper.floor_double(owner.posX);
 			int lyy = MathHelper.floor_double(owner.posY);
@@ -215,7 +215,7 @@ public class LMM_EntityMode_Torcher extends LMM_EntityModeBase {
 					for (int lyi : lil) {
 						int lv = lworld.getBlockLightValue(lxx + x, lyi, lzz + z);
 						if (ll > lv && lii instanceof ItemBlock &&
-								canPlaceItemBlockOnSide(lworld, lxx + x, lyi - 1, lzz + z, 1, owner.maidAvatar, lis, (ItemBlock)lii)
+								canPlaceItemBlockOnSide(lworld, lxx + x, lyi - 1, lzz + z, 1, (EntityPlayer) owner.maidAvatar, lis, (ItemBlock)lii)
 								&& canBlockBeSeen(lxx + x, lyi - 1, lzz + z, true, false, true)) {
 //						if (ll > lv && lworld.getBlockMaterial(lxx + x, lyi - 1, lzz + z).isSolid()
 //								&& (lworld.getBlockMaterial(lxx + x, lyi, lzz + z) == Material.air
@@ -230,12 +230,12 @@ public class LMM_EntityMode_Torcher extends LMM_EntityModeBase {
 					}
 				}
 			}
-			
-			if (ll < 8 && lis.tryPlaceItemIntoWorld(owner.maidAvatar, owner.worldObj, ltx, lty, ltz, 1, 0.5F, 1.0F, 0.5F)) {
+
+			if (ll < 8 && lis.tryPlaceItemIntoWorld((EntityPlayer) owner.maidAvatar, owner.worldObj, ltx, lty, ltz, 1, 0.5F, 1.0F, 0.5F)) {
 //				mod_LMM_littleMaidMob.Debug("torch-inst: %d, %d, %d: %d", ltx, lty, ltz, ll);
 				owner.setSwing(10, LMM_EnumSound.installation);
 				owner.getNavigator().clearPathEntity();
-				if (owner.maidAvatar.capabilities.isCreativeMode) {
+				if (((EntityPlayer)owner.maidAvatar).capabilities.isCreativeMode) {
 					lis.stackSize = lic;
 				}
 				if (lis.stackSize <= 0) {

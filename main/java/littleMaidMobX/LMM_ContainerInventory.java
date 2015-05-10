@@ -11,7 +11,7 @@ import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
 public class LMM_ContainerInventory extends ContainerPlayer {
-	
+
 	protected final LMM_InventoryLittleMaid littlemaidInventory;
 	protected final int numRows;
 	protected final LMM_EntityLittleMaid owner;
@@ -20,34 +20,34 @@ public class LMM_ContainerInventory extends ContainerPlayer {
 	public LMM_ContainerInventory(IInventory iinventory, LMM_EntityLittleMaid pEntity) {
 		// >
 		// Forge対策、ContainerPlayer継承でなければ要らない、SlotArmor用
-		super(pEntity.maidInventory, !pEntity.worldObj.isRemote, pEntity.maidAvatar);
+		super(pEntity.maidInventory, !pEntity.worldObj.isRemote, (EntityPlayer) pEntity.maidAvatar);
 		inventorySlots.clear();
 		inventoryItemStacks.clear();
 		// <
-		
+
 		LMM_InventoryLittleMaid linventory = pEntity.maidInventory;
 		owner = pEntity;
 		numRows = linventory.getSizeInventory() / 9;
 		littlemaidInventory = linventory;
 		littlemaidInventory.openInventory();
-		
+
 		for (int ly = 0; ly < numRows; ly++) {
 			for (int lx = 0; lx < 9; lx++) {
 				addSlotToContainer(new Slot(linventory, lx + ly * 9, 8 + lx * 18, 76 + ly * 18));
 			}
 		}
-		
+
 		int lyoffset = (numRows - 4) * 18 + 59;
 		for (int ly = 0; ly < 3; ly++) {
 			for (int lx = 0; lx < 9; lx++) {
 				addSlotToContainer(new Slot(iinventory, lx + ly * 9 + 9, 8 + lx * 18, 103 + ly * 18 + lyoffset));
 			}
 		}
-		
+
 		for (int lx = 0; lx < 9; lx++) {
 			addSlotToContainer(new Slot(iinventory, lx, 8 + lx * 18, 161 + lyoffset));
 		}
-		
+
 		for (int j = 0; j < 3; j++) {
 //			int j1 = j + 1;
 //			addSlotToContainer(new SlotArmor(this, linventory, linventory.getSizeInventory() - 2 - j, 8, 8 + j * 18, j1));
@@ -87,7 +87,7 @@ public class LMM_ContainerInventory extends ContainerPlayer {
 	@Override
 	public boolean canInteractWith(EntityPlayer entityplayer) {
 		// 開けるかどうかの判定
-		LMM_EntityLittleMaid entitylittlemaid = littlemaidInventory.entityLittleMaid; 
+		LMM_EntityLittleMaid entitylittlemaid = littlemaidInventory.entityLittleMaid;
 		if(entitylittlemaid.isDead) {
 //		if(entitylittlemaid.isDead || entitylittlemaid.isOpenInventory()) {
 			return false;
@@ -101,7 +101,7 @@ public class LMM_ContainerInventory extends ContainerPlayer {
 		Slot slot = (Slot)inventorySlots.get(pIndex);
 		if (slot != null && slot.getHasStack()) {
 			ItemStack itemstack1 = slot.getStack();
-			
+
 			if(LMM_LittleMaidMobX.isMaidIgnoreItem(itemstack1))
 			{
 				// コンフィグで無視に指定されたアイテムは移動しない

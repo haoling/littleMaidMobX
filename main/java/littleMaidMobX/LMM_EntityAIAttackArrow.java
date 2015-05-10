@@ -19,16 +19,16 @@ import net.minecraft.world.World;
 public class LMM_EntityAIAttackArrow extends EntityAIBase implements LMM_IEntityAI {
 
 	protected boolean fEnable;
-	
+
 	protected LMM_EntityLittleMaid fMaid;
-	protected LMM_EntityLittleMaidAvatar fAvatar;
+	protected LMM_IEntityLittleMaidAvatarBase fAvatar;
 	protected LMM_InventoryLittleMaid fInventory;
 	protected LMM_SwingStatus swingState;
 	protected World worldObj;
 	protected EntityLivingBase fTarget;
 	protected int fForget;
 
-	
+
 	public LMM_EntityAIAttackArrow(LMM_EntityLittleMaid pEntityLittleMaid) {
 		fMaid = pEntityLittleMaid;
 		fAvatar = pEntityLittleMaid.maidAvatar;
@@ -38,11 +38,11 @@ public class LMM_EntityAIAttackArrow extends EntityAIBase implements LMM_IEntity
 		fEnable = false;
 		setMutexBits(3);
 	}
-	
+
 	@Override
 	public boolean shouldExecute() {
 		EntityLivingBase entityliving = fMaid.getAttackTarget();
-		
+
 		if (!fEnable || entityliving == null || entityliving.isDead) {
 			fMaid.setAttackTarget(null);
 			fMaid.setTarget(null);
@@ -79,7 +79,7 @@ public class LMM_EntityAIAttackArrow extends EntityAIBase implements LMM_IEntity
 
 		double backupPosX = fMaid.posX;
 		double backupPosZ = fMaid.posZ;
-		
+
 		// プレイヤーに乗っていると射線にプレイヤーが入り、撃てなくなるため僅かに目標エンティティに近づける
 		// 関数を抜ける前に元に戻す必要があるので途中で return しないこと
 		if(fMaid.ridingEntity instanceof EntityPlayer)
@@ -90,21 +90,21 @@ public class LMM_EntityAIAttackArrow extends EntityAIBase implements LMM_IEntity
 			fMaid.posX += dtx / distTarget * 1.0;	// 1m 目標に近づける
 			fMaid.posZ += dtz / distTarget * 1.0;	// 1m 目標に近づける
 		}
-		
+
 		double lrange = 225D;
 		double ldist = fMaid.getDistanceSqToEntity(fTarget);
 		boolean lsee = fMaid.getEntitySenses().canSee(fTarget);
-		
+
 		// 視界の外に出たら一定時間で飽きる
 		if (lsee) {
 			fForget = 0;
 		} else {
 			fForget++;
 		}
-		
+
 		// 攻撃対象を見る
 		fMaid.getLookHelper().setLookPositionWithEntity(fTarget, 30F, 30F);
-		
+
 		if (ldist < lrange) {
 			// 有効射程内
 			double atx = fTarget.posX - fMaid.posX;
@@ -122,10 +122,10 @@ public class LMM_EntityAIAttackArrow extends EntityAIBase implements LMM_IEntity
 					double amx = masterEntity.posX - fMaid.posX;
 					double amy = masterEntity.posY - fMaid.posY;//-2D
 					double amz = masterEntity.posZ - fMaid.posZ;
-					
+
 					// この値が０～１ならターゲットとの間に主がいる
 					il = (amx * atx + amy * aty + amz * atz) / atl;
-					
+
 					// 射線ベクトルと主との垂直ベクトル
 					double mix = (fMaid.posX + il * atx) - masterEntity.posX;
 					double miy = (fMaid.posY + il * aty) - masterEntity.posY;// + 2D;
@@ -134,7 +134,7 @@ public class LMM_EntityAIAttackArrow extends EntityAIBase implements LMM_IEntity
 					milsq = mix * mix + miy * miy + miz * miz;
 //					mod_LMM_littleMaidMob.Debug("il:%f, milsq:%f", il, milsq);
 				}
-				
+
 				if (litemstack != null && !(litemstack.getItem() instanceof ItemFood) && !fMaid.weaponReload) {
 					int lastentityid = worldObj.loadedEntityList.size();
 					int itemcount = litemstack.stackSize;
@@ -144,7 +144,7 @@ public class LMM_EntityAIAttackArrow extends EntityAIBase implements LMM_IEntity
 					boolean lcanattack = true;
 					boolean ldotarget = false;
 					double tpr = Math.sqrt(atl);
-					Entity lentity = MMM_Helper.getRayTraceEntity(fMaid.maidAvatar, tpr + 1.0F, 1.0F, 1.0F);
+					Entity lentity = MMM_Helper.getRayTraceEntity((EntityLivingBase)fMaid.maidAvatar, tpr + 1.0F, 1.0F, 1.0F);
 					Item helmid = !fMaid.isMaskedMaid() ? null : fInventory.armorInventory[3].getItem();
 					if (helmid == Items.diamond_helmet || helmid == Items.golden_helmet) {
 						// 射線軸の確認
@@ -181,7 +181,7 @@ public class LMM_EntityAIAttackArrow extends EntityAIBase implements LMM_IEntity
 						fMaid.getNavigator().clearPathEntity();
 //						mod_LMM_littleMaidMob.Debug("Shooting Range.");
 					}
-					
+
 					lcanattack &= lsee;
 //            		mod_littleMaidMob.Debug(String.format("id:%d at:%d", entityId, attackTime));
 					if (((fMaid.weaponFullAuto && !lcanattack) || (lcanattack && fMaid.getSwingStatusDominant().canAttack())) && fAvatar.isItemTrigger) {
@@ -202,19 +202,19 @@ public class LMM_EntityAIAttackArrow extends EntityAIBase implements LMM_IEntity
 									int at = ((helmid == Items.iron_helmet) || (helmid == Items.diamond_helmet)) ? 26 : 16;
 									if (swingState.attackTime < at) {
 										fMaid.setSwing(at, LMM_EnumSound.sighting);
-										litemstack = litemstack.useItemRightClick(worldObj, fAvatar);
+										litemstack = litemstack.useItemRightClick(worldObj, (EntityPlayer) fAvatar);
 										LMM_LittleMaidMobX.Debug("id:%d redygun.", fMaid.getEntityId());
 									}
 								} else {
 									LMM_LittleMaidMobX.Debug(String.format("ID:%d-friendly fire FullAuto.", fMaid.getEntityId()));
 								}
 							}
-						} 
+						}
 						else if (litemstack.getMaxItemUseDuration() == 0) {
 							// 通常投擲兵装
 							if (swingState.canAttack() && !fAvatar.isUsingItem()) {
 								if (lcanattack) {
-									litemstack = litemstack.useItemRightClick(worldObj, fAvatar);
+									litemstack = litemstack.useItemRightClick(worldObj, (EntityPlayer) fAvatar);
 									// 意図的にショートスパンで音が鳴るようにしてある
 									fMaid.mstatAimeBow = false;
 									fMaid.setSwing(10, (litemstack.stackSize == itemcount) ? LMM_EnumSound.shoot_burst : LMM_EnumSound.Null);
@@ -226,7 +226,7 @@ public class LMM_EntityAIAttackArrow extends EntityAIBase implements LMM_IEntity
 						} else {
 							// リロード有りの特殊兵装
 							if (!fAvatar.isUsingItemLittleMaid()) {
-								litemstack = litemstack.useItemRightClick(worldObj, fAvatar);
+								litemstack = litemstack.useItemRightClick(worldObj, (EntityPlayer) fAvatar);
 								LMM_LittleMaidMobX.Debug(String.format("%d reload.", fMaid.getEntityId()));
 							}
 							// リロード終了まで強制的に構える
@@ -242,7 +242,7 @@ public class LMM_EntityAIAttackArrow extends EntityAIBase implements LMM_IEntity
 					} else {
 						fInventory.setInventoryCurrentSlotContents(litemstack);
 					}
-					
+
 					// 発生したEntityをチェックしてmaidAvatarEntityが居ないかを確認
 					List<Entity> newentitys = worldObj.loadedEntityList.subList(lastentityid, worldObj.loadedEntityList.size());
 					boolean shootingflag = false;
@@ -298,9 +298,9 @@ public class LMM_EntityAIAttackArrow extends EntityAIBase implements LMM_IEntity
 			} else {
 				fAvatar.clearItemInUse();
 			}
-			
+
 		}
-		
+
 
 		// プレイヤーが射線に入らないように、変更したメイドさんの位置を元に戻す
 		fMaid.posX = backupPosX;

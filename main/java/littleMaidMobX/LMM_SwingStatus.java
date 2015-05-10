@@ -5,7 +5,6 @@ import java.util.Random;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.EnumAction;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.Vec3;
 
@@ -53,7 +52,7 @@ public class LMM_SwingStatus {
 		if (attackTime > 0) {
 			attackTime--;
 		}
-		
+
 		// 腕振り
 		int li = pEntity.getSwingSpeedModifier();
 		if (isSwingInProgress) {
@@ -66,11 +65,11 @@ public class LMM_SwingStatus {
 			swingProgressInt = 0;
 		}
 		swingProgress = (float)swingProgressInt / (float)li;
-		
+
 		if (isUsingItem()) {
 			ItemStack itemstack = pEntity.maidInventory.getStackInSlot(index);
 			Entity lrentity = pEntity.worldObj.isRemote ? null : pEntity;
-			
+
 			if (itemstack != itemInUse) {
 				clearItemInUse(lrentity);
 			} else {
@@ -79,7 +78,7 @@ public class LMM_SwingStatus {
 					updateItemUse(pEntity, 5);
 				}
 				if (--itemInUseCount <= 0 && lrentity != null) {
-					onItemUseFinish(pEntity.maidAvatar);
+					onItemUseFinish((EntityPlayer) pEntity.maidAvatar);
 				}
 			}
 		}
@@ -115,11 +114,11 @@ public class LMM_SwingStatus {
 
 	public float getSwingProgress(float ltime) {
 		float lf = swingProgress - prevSwingProgress;
-		
+
 		if (lf < 0.0F) {
 			++lf;
 		}
-		
+
 		return onGround = prevSwingProgress + lf * ltime;
 	}
 
@@ -161,7 +160,7 @@ public class LMM_SwingStatus {
 	}
 
 	/**
-	 * 
+	 *
 	 * @param pEntity
 	 * サーバーの時はEntityを設定する。
 	 */
@@ -169,19 +168,19 @@ public class LMM_SwingStatus {
 		if (itemInUse != null && pEntity instanceof EntityPlayer) {
 			itemInUse.onPlayerStoppedUsing(pEntity.worldObj, (EntityPlayer)pEntity, itemInUseCount);
 		}
-		
+
 		clearItemInUse(pEntity);
 	}
 
 	/**
-	 * 
+	 *
 	 * @param pEntity
 	 * サーバーの時はEntityを設定する。
 	 */
 	public void clearItemInUse(Entity pEntity) {
 		itemInUse = null;
 		itemInUseCount = 0;
-		
+
 		if (pEntity != null) {
 			pEntity.setEating(false);
 		}
@@ -192,7 +191,7 @@ public class LMM_SwingStatus {
 	}
 
 	/**
-	 * 
+	 *
 	 * @param par1ItemStack
 	 * @param par2
 	 * @param pEntity
@@ -202,7 +201,7 @@ public class LMM_SwingStatus {
 		if (par1ItemStack != itemInUse) {
 			itemInUse = par1ItemStack;
 			itemInUseCount = par2;
-			
+
 			if (pEntity != null) {
 				pEntity.setEating(true);
 			}
@@ -213,9 +212,9 @@ public class LMM_SwingStatus {
 		if (itemInUse.getItemUseAction() == EnumAction.drink) {
 			pEntity.playSound("random.drink", 0.5F, pEntity.worldObj.rand.nextFloat() * 0.1F + 0.9F);
 		}
-		
+
 		Random rand = new Random();
-		
+
 		if (itemInUse.getItemUseAction() == EnumAction.eat) {
 			for (int var3 = 0; var3 < par2; ++var3) {
 				Vec3 var4 = Vec3.createVectorHelper(((double)rand.nextFloat() - 0.5D) * 0.1D, Math.random() * 0.1D + 0.1D, 0.0D);
@@ -227,7 +226,7 @@ public class LMM_SwingStatus {
 				var5 = var5.addVector(pEntity.posX, pEntity.posY + (double)pEntity.getEyeHeight(), pEntity.posZ);
 				pEntity.worldObj.spawnParticle("iconcrack_" + itemInUse.getItem(), var5.xCoord, var5.yCoord, var5.zCoord, var4.xCoord, var4.yCoord + 0.05D, var4.zCoord);
 			}
-			
+
 			pEntity.playSound("random.eat", 0.5F + 0.5F * (float)rand.nextInt(2), (rand.nextFloat() - rand.nextFloat()) * 0.2F + 1.0F);
 		}
 	}
@@ -237,7 +236,7 @@ public class LMM_SwingStatus {
 			this.updateItemUse(pEntityPlayer, 16);
 			int var1 = this.itemInUse.stackSize;
 			ItemStack var2 = itemInUse.onFoodEaten(pEntityPlayer.worldObj, pEntityPlayer);
-			
+
 			if (var2 != this.itemInUse || var2 != null && var2.stackSize != var1) {
 				if (var2.stackSize == 0) {
 					pEntityPlayer.inventory.setInventorySlotContents(index, null);
@@ -245,7 +244,7 @@ public class LMM_SwingStatus {
 					pEntityPlayer.inventory.setInventorySlotContents(index, var2);
 				}
 			}
-			
+
 			clearItemInUse(pEntityPlayer);
 		}
 	}

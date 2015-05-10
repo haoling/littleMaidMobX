@@ -11,11 +11,11 @@ public class W_Client
 	private static W_IClient getInstance()
 	{
 		final String VER = Loader.instance().getMCVersionString();
-		if(VER.equalsIgnoreCase("1.7.2"))
+		if(VER.indexOf("1.7.2") > 0)
 		{
 			return new wrapper.mc172.W_CClient();
 		}
-		else if(VER.equalsIgnoreCase("1.7.10"))
+		else if(VER.indexOf("1.7.10") > 0)
 		{
 			return new wrapper.mc1710.W_CClient();
 		}
