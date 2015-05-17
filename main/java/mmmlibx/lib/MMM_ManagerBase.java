@@ -57,7 +57,7 @@ public abstract class MMM_ManagerBase {
 		for (File lf : pfile.listFiles()) {
 			if (lf.isFile()) {
 				String lname = lf.getName();
-				if (lname.indexOf(getPreFix()) > 0 && lname.endsWith(".class")) {
+				if (lname.indexOf(getPreFix()) >= 0 && lname.endsWith(".class")) {
 					// 対象クラスファイルなのでロード
 					loadClass(lf.getName());
 				}
@@ -79,7 +79,7 @@ public abstract class MMM_ManagerBase {
 				}
 				if (!zipentry.isDirectory()) {
 					String lname = zipentry.getName();
-					if (lname.indexOf(getPreFix()) > 0 && lname.endsWith(".class")) {
+					if (lname.indexOf(getPreFix()) >= 0 && lname.endsWith(".class")) {
 						loadClass(zipentry.getName());
 					}
 				}

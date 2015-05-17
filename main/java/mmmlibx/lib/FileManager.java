@@ -40,6 +40,8 @@ public class FileManager {
 	public static void setSrcPath(File file)
 	{
 		assetsDir = file.getPath() + "/assets";
+		MMMLib.Debug("mods path =" + dirMods.getAbsolutePath());
+		/*
 		// eclipseの環境の場合、eclipseフォルダ配下のmodsを見に行く
 		isDevdir = file.getName().equalsIgnoreCase("bin");
 		if(isDevdir)
@@ -50,6 +52,7 @@ public class FileManager {
 		{
 			dirMods = new File(file.getParent());
 		}
+		*/
 	}
 
 	/**
