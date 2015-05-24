@@ -7,24 +7,26 @@ import net.minecraft.entity.EntityCreature;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.ai.attributes.BaseAttributeMap;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.potion.Potion;
 import net.minecraft.potion.PotionEffect;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.server.management.ItemInWorldManager;
 import net.minecraft.stats.StatBase;
+import net.minecraft.stats.StatisticsFile;
 import net.minecraft.util.ChunkCoordinates;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.IChatComponent;
 import net.minecraft.util.MathHelper;
 import net.minecraft.world.World;
+import net.minecraftforge.common.util.FakePlayer;
 import wrapper.W_Common;
 
 
+// EntityPlayerMP -> FakePlayer に変更
+// http://forum.minecraftuser.jp/viewtopic.php?f=13&t=23347&start=420#p232465
 
-public class LMM_EntityLittleMaidAvatarMP extends EntityPlayerMP implements LMM_IEntityLittleMaidAvatarBase
+public class LMM_EntityLittleMaidAvatarMP extends FakePlayer implements LMM_IEntityLittleMaidAvatarBase
 {
 	public LMM_EntityLittleMaid avatar;
 	/** いらん？ **/
@@ -40,9 +42,8 @@ public class LMM_EntityLittleMaidAvatarMP extends EntityPlayerMP implements LMM_
 
 	public LMM_EntityLittleMaidAvatarMP(World par1World)
 	{
-		super(MinecraftServer.getServer(),
-				MinecraftServer.getServer().worldServerForDimension(par1World == null ? 0 : par1World.provider.dimensionId),
-				W_Common.newGameProfile("1", "LMM_EntityLittleMaidAvatar"),new ItemInWorldManager(par1World));
+		super(MinecraftServer.getServer().worldServerForDimension(par1World == null ? 0 : par1World.provider.dimensionId),
+				W_Common.newGameProfile("1", "LMM_EntityLittleMaidAvatar"));
 	}
 	
 	public LMM_EntityLittleMaidAvatarMP(World par1World, LMM_EntityLittleMaid par2EntityLittleMaid) {
@@ -56,6 +57,21 @@ public class LMM_EntityLittleMaidAvatarMP extends EntityPlayerMP implements LMM_
 		
 		inventory = avatar.maidInventory;
 		inventory.player = this;
+	}
+
+	/** 実績参照:黄昏の森などの実績解除が必要なMOD用にマスターの実績を返す<br>
+	 * @see <a href="http://forum.minecraftuser.jp/viewtopic.php?f=13&t=23347&start=400#p232443">日本フォーラムのチケット</a> */
+	@Override
+	public StatisticsFile func_147099_x() {
+		if(!this.worldObj.isRemote)
+		{
+			// ご主人様がいれば、ご主人様の実績を返す。
+			if (this.avatar != null && this.avatar.getMaidMasterEntity() != null) {
+				return MinecraftServer.getServer()
+					.getConfigurationManager().func_152602_a(this.avatar.getMaidMasterEntity());
+			}
+		}
+		return super.func_147099_x();
 	}
 
 	////////////////////////////////////////////////////////////////////////////////////
@@ -587,6 +603,12 @@ public class LMM_EntityLittleMaidAvatarMP extends EntityPlayerMP implements LMM_
 	public void W_damageEntity(DamageSource par1DamageSource, float par2)
 	{
 		super.damageEntity(par1DamageSource, par2);
+	}
+
+	@Override
+	public boolean isEntityInvulnerable() {
+		// TODO 自動生成されたメソッド・スタブ
+		return false;
 	}
 
 	@Override

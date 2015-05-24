@@ -3223,12 +3223,15 @@ public class LMM_EntityLittleMaid extends EntityTameable implements ITextureEnti
 	 * Client用
 	 */
 	public void setTextureNames() {
+		textureData.setTextureNames();
+		/* http://forum.minecraftuser.jp/posting.php?mode=reply&f=13&t=23347#pr231574
 		if (!textureData.setTextureNames()) {
 			// TODO:setDefaultTexture
 //			if (worldObj.isRemote) {
 				setNextTexturePackege(0);
 //			}
 		}
+		*/
 	}
 
 	public void setNextTexturePackege(int pTargetTexture) {
