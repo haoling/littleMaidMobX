@@ -26,6 +26,7 @@ import net.minecraft.util.StatCollector;
 
 import org.lwjgl.opengl.EXTRescaleNormal;
 import org.lwjgl.opengl.GL11;
+import org.lwjgl.opengl.GL12;
 
 public class LMM_GuiInventory extends GuiContainer {
 	// Field
@@ -76,7 +77,6 @@ public class LMM_GuiInventory extends GuiContainer {
 
 	@Override
 	protected void drawGuiContainerForegroundLayer(int par1, int par2) {
-		String ls;
 		mc.fontRenderer.drawString(StatCollector.translateToLocal(
 				lowerChestInventory.getInventoryName()), 8, 64, 0x404040);
 		mc.fontRenderer.drawString(StatCollector.translateToLocal(
@@ -95,7 +95,6 @@ public class LMM_GuiInventory extends GuiContainer {
 		// キャラ
 		int lj = 0;
 		int lk = 0;
-		GL11.glEnable(EXTRescaleNormal.GL_RESCALE_NORMAL_EXT);
 		GL11.glEnable(GL11.GL_COLOR_MATERIAL);
 		GL11.glPushMatrix();
 		GL11.glTranslatef(lj + 51, lk + 57, 50F);
@@ -126,11 +125,16 @@ public class LMM_GuiInventory extends GuiContainer {
 		entitylittlemaid.rotationPitch = f5;
 		GL11.glPopMatrix();
 		RenderHelper.disableStandardItemLighting();
-		GL11.glDisable(EXTRescaleNormal.GL_RESCALE_NORMAL_EXT);
-		OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, 240F / 1.0F, 240F / 1.0F);
+		GL11.glDisable(GL12.GL_RESCALE_NORMAL);
+		OpenGlHelper.setActiveTexture(OpenGlHelper.lightmapTexUnit);
+		GL11.glDisable(GL11.GL_TEXTURE_2D);
+		OpenGlHelper.setActiveTexture(OpenGlHelper.defaultTexUnit);
+
+		RenderHelper.enableGUIStandardItemLighting();
+		GL11.glEnable(GL12.GL_RESCALE_NORMAL);
 		GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
 	}
-
+	
 	@Override
 	protected void drawGuiContainerBackgroundLayer(float f, int i, int j) {
 		// 背景
@@ -206,6 +210,7 @@ public class LMM_GuiInventory extends GuiContainer {
 			}
 		}
 */
+//		test(i, j);
 	}
 
 	protected void drawHeathArmor(int par1, int par2) {

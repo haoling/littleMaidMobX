@@ -11,6 +11,7 @@ import net.minecraft.util.StatCollector;
 
 import org.lwjgl.opengl.EXTRescaleNormal;
 import org.lwjgl.opengl.GL11;
+import org.lwjgl.opengl.GL12;
 
 public class MMM_GuiTextureSelect extends GuiScreen {
 
@@ -88,6 +89,15 @@ public class MMM_GuiTextureSelect extends GuiScreen {
 		}
 		GL11.glDisable(EXTRescaleNormal.GL_RESCALE_NORMAL_EXT);
 		GL11.glPopMatrix();
+
+		RenderHelper.disableStandardItemLighting();
+		GL11.glDisable(GL12.GL_RESCALE_NORMAL);
+		OpenGlHelper.setActiveTexture(OpenGlHelper.lightmapTexUnit);
+		GL11.glDisable(GL11.GL_TEXTURE_2D);
+		OpenGlHelper.setActiveTexture(OpenGlHelper.defaultTexUnit);
+
+		RenderHelper.enableGUIStandardItemLighting();
+		GL11.glEnable(GL12.GL_RESCALE_NORMAL);
 	}
 
 	@Override
