@@ -7,6 +7,8 @@ import net.minecraft.command.ICommand;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.entity.IEntityOwnable;
 import net.minecraft.entity.passive.EntityTameable;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.stats.StatisticsFile;
 
 import com.mojang.authlib.GameProfile;
 
@@ -57,5 +59,10 @@ public class W_Common
 	public static void notifyAdmins(ICommandSender sender, ICommand cmd, int p_152374_2_, String s, Object ... p_152374_4_)
 	{
 		instance.notifyAdmins(sender, cmd, p_152374_2_, s, p_152374_4_);
+	}
+	
+	public static StatisticsFile getStatisticsFile(EntityPlayer player)
+	{
+		return instance.getStatisticsFile(player);
 	}
 }

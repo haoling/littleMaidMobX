@@ -67,8 +67,7 @@ public class LMM_EntityLittleMaidAvatarMP extends FakePlayer implements LMM_IEnt
 		{
 			// ご主人様がいれば、ご主人様の実績を返す。
 			if (this.avatar != null && this.avatar.getMaidMasterEntity() != null) {
-				return MinecraftServer.getServer()
-					.getConfigurationManager().func_152602_a(this.avatar.getMaidMasterEntity());
+				return W_Common.getStatisticsFile(this.avatar.getMaidMasterEntity());
 			}
 		}
 		return super.func_147099_x();
