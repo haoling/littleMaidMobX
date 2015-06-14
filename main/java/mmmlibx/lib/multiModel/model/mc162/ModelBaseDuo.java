@@ -68,6 +68,12 @@ public class ModelBaseDuo extends ModelBaseNihil implements IModelBaseMMM {
 	@Override
 	public void render(Entity par1Entity, float par2, float par3, float par4, float par5, float par6, float par7) {
 		boolean lri = (renderCount & 0x0f) == 0;
+
+		GL11.glAlphaFunc(GL11.GL_GREATER, 0.001F);
+		GL11.glEnable(GL11.GL_BLEND);
+		GL11.glEnable(GL11.GL_ALPHA_TEST);
+		GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
+
 		if (modelInner != null) {
 			if (textureInner != null && lri) {
 				if (textureInner[renderParts] != null) {
@@ -107,6 +113,11 @@ public class ModelBaseDuo extends ModelBaseNihil implements IModelBaseMMM {
 				}
 			}
 		}
+
+		GL11.glEnable(GL11.GL_BLEND);
+		GL11.glEnable(GL11.GL_ALPHA_TEST);
+		GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
+
 		if (modelOuter != null) {
 			if (textureOuter != null && lri) {
 				// 通常パーツ

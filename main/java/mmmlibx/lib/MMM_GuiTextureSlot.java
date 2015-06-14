@@ -7,13 +7,16 @@ import java.util.Map;
 import mmmlibx.lib.multiModel.model.mc162.ModelMultiBase;
 import net.minecraft.client.gui.GuiSlot;
 import net.minecraft.client.renderer.OpenGlHelper;
+import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 
+import org.lwjgl.opengl.EXTRescaleNormal;
 import org.lwjgl.opengl.GL11;
+import org.lwjgl.opengl.GL12;
 
 public class MMM_GuiTextureSlot extends GuiSlot {
 
@@ -165,6 +168,11 @@ public class MMM_GuiTextureSlot extends GuiSlot {
 //						lbox.getArmorTextureName(MMM_TextureManager.tx_armor2, "default", 0);
 				entity.setTextureNames("default");
 				RenderManager.instance.renderEntityWithPosYaw(entity, 0.0D, 0.0D, 0.0D, 0.0F, 1.0F);
+
+				RenderHelper.enableGUIStandardItemLighting();
+				OpenGlHelper.setActiveTexture(OpenGlHelper.lightmapTexUnit);
+				GL11.glDisable(GL11.GL_TEXTURE_2D);
+				OpenGlHelper.setActiveTexture(OpenGlHelper.defaultTexUnit);
 			}
 			for (String ls : MMM_TextureManager.armorFilenamePrefix) {
 				GL11.glTranslatef(1F, 0, 0);
@@ -178,6 +186,11 @@ public class MMM_GuiTextureSlot extends GuiSlot {
 					entity.setTextureNames(ls);
 					RenderManager.instance.renderEntityWithPosYaw(entity, 0.0D, 0.0D, 0.0D, 0.0F, 1.0F);
 					Client.setLightmapTextureCoords(0x00f0);//61680
+
+					RenderHelper.enableGUIStandardItemLighting();
+					OpenGlHelper.setActiveTexture(OpenGlHelper.lightmapTexUnit);
+					GL11.glDisable(GL11.GL_TEXTURE_2D);
+					OpenGlHelper.setActiveTexture(OpenGlHelper.defaultTexUnit);
 				}
 			}
 		} else {
@@ -191,11 +204,24 @@ public class MMM_GuiTextureSlot extends GuiSlot {
 //					entity.getTextures(0)[0] = lbox.getTextureName(li + (isContract ? 0 : MMM_TextureManager.tx_wild));
 					RenderManager.instance.renderEntityWithPosYaw(entity, 0.0D, 0.0D, 0.0D, 0.0F, 1.0F);
 					Client.setLightmapTextureCoords(0x00f0);//61680
+
+					RenderHelper.enableGUIStandardItemLighting();
+					OpenGlHelper.setActiveTexture(OpenGlHelper.lightmapTexUnit);
+					GL11.glDisable(GL11.GL_TEXTURE_2D);
+					OpenGlHelper.setActiveTexture(OpenGlHelper.defaultTexUnit);
 				}
 			}
 		}
 		
 		GL11.glPopMatrix();
+
+		GL11.glDisable(GL12.GL_RESCALE_NORMAL);
+		OpenGlHelper.setActiveTexture(OpenGlHelper.lightmapTexUnit);
+		GL11.glDisable(GL11.GL_TEXTURE_2D);
+		OpenGlHelper.setActiveTexture(OpenGlHelper.defaultTexUnit);
+
+		RenderHelper.enableGUIStandardItemLighting();
+		GL11.glEnable(GL12.GL_RESCALE_NORMAL);
 	}
 
 	public MMM_TextureBox getSelectedBox() {
