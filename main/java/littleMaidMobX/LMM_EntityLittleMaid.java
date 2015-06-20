@@ -683,12 +683,12 @@ public class LMM_EntityLittleMaid extends EntityTameable implements ITextureEnti
 		if (worldObj.isRemote) {
 			// Client
 			String s = LMM_SoundManager.getSoundValue(enumsound, textureData.getTextureName(0), textureData.getColor());
-			if(!s.isEmpty() && !s.startsWith("minecraft:"))
+			if(s!= null && !s.isEmpty() && !s.startsWith("minecraft:"))
 			{
 				s = LMM_LittleMaidMobX.DOMAIN + ":" + s;
 			}
 			LMM_LittleMaidMobX.Debug(String.format("id:%d, se:%04x-%s (%s)", getEntityId(), enumsound.index, enumsound.name(), s));
-			if(!s.isEmpty())
+			if(s!= null && !s.isEmpty())
 			{
 				float lpitch = LMM_LittleMaidMobX.cfg_VoiceDistortion ? (rand.nextFloat() * 0.2F) + 0.95F : 1.0F;
 				worldObj.playSound(posX, posY, posZ, s, getSoundVolume(), lpitch, false);
