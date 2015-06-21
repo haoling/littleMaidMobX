@@ -41,8 +41,10 @@ public class LMM_EntityAINearestAttackableTarget extends EntityAINearestAttackab
 	
 	@Override
 	public boolean shouldExecute() {
+		boolean ret = false;
+		
 		if (this.targetChance > 0 && this.taskOwner.getRNG().nextInt(this.targetChance) != 0) {
-			return false;
+//			return false;
 //		} else if (theMaid.getAttackTarget() != null) {
 //			return true;
 		} else {
@@ -61,12 +63,22 @@ public class LMM_EntityAINearestAttackableTarget extends EntityAINearestAttackab
 				Entity var3 = (Entity)var2.next();
 				if (var3.isEntityAlive() && this.isSuitableTargetLM(var3, false)) {
 					this.targetEntity = var3;
-					return true;
+					ret = true;
 				}
 			}
-			
-			return false;
 		}
+		
+		// 主に対する攻撃を行ったモブを最優先で狙う
+		// http://forum.minecraftuser.jp/viewtopic.php?t=23347&start=460#p234230
+		if (theMaid.isContract() && theMaid.mstatMasterEntity != null) {
+			EntityLivingBase lentity = theMaid.mstatMasterEntity.getAITarget();
+			if (this.isSuitableTargetLM(lentity, false)) {
+				theMaid.setRevengeTarget(lentity);
+				ret = true;
+			}
+		}
+		
+		return ret;
 	}
 
 	@Override
@@ -129,7 +141,7 @@ public class LMM_EntityAINearestAttackableTarget extends EntityAINearestAttackab
 			}
 			
 			if (this.fcanAttack == 0) {
-				this.fcanAttack = this.func_75295_a(pTarget) ? 1 : 2;
+				this.fcanAttack = this.canEasilyReach(pTarget) ? 1 : 2;
 			}
 			
 			if (this.fcanAttack == 2) {
@@ -141,7 +153,7 @@ public class LMM_EntityAINearestAttackableTarget extends EntityAINearestAttackab
 	}
 
 	// 最終位置が攻撃の間合いでなければ失敗
-	protected boolean func_75295_a(Entity par1EntityLiving) {
+	protected boolean canEasilyReach(Entity par1EntityLiving) {
 		this.fretryCounter = 10 + this.taskOwner.getRNG().nextInt(5);
 		PathEntity var2 = taskOwner.getNavigator().getPathToXYZ(par1EntityLiving.posX, par1EntityLiving.posY, par1EntityLiving.posZ);
 //		PathEntity var2 = this.taskOwner.getNavigator().getPathToEntityLiving(par1EntityLiving);

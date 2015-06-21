@@ -102,7 +102,7 @@ public class LMM_EntityAIHurtByTarget extends EntityAIHurtByTarget {
 			}
 			
 			if (this.field_75301_b == 0) {
-				this.field_75301_b = this.func_75295_a(par1EntityLiving) ? 1 : 2;
+				this.field_75301_b = this.canEasilyReach(par1EntityLiving) ? 1 : 2;
 			}
 			
 			if (this.field_75301_b == 2) {
@@ -113,7 +113,7 @@ public class LMM_EntityAIHurtByTarget extends EntityAIHurtByTarget {
 		return true;
 	}
 
-	protected boolean func_75295_a(Entity par1EntityLiving) {
+	protected boolean canEasilyReach(Entity par1EntityLiving) {
 		this.field_75302_c = 10 + this.taskOwner.getRNG().nextInt(5);
 		PathEntity var2 = taskOwner.getNavigator().getPathToXYZ(par1EntityLiving.posX, par1EntityLiving.posY, par1EntityLiving.posZ);
 //		PathEntity var2 = this.taskOwner.getNavigator().getPathToEntityLiving(par1EntityLiving);

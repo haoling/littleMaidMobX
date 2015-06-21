@@ -3483,4 +3483,9 @@ public class LMM_EntityLittleMaid extends EntityTameable implements ITextureEnti
 	{
 		super.setSize(par1, par2);
 	}
+
+    public float getEyeHeight()
+    {
+        return this.height * 0.95F;
+    }
 }

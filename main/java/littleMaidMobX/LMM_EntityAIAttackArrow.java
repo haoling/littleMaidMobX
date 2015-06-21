@@ -27,6 +27,12 @@ public class LMM_EntityAIAttackArrow extends EntityAIBase implements LMM_IEntity
 	protected World worldObj;
 	protected EntityLivingBase fTarget;
 	protected int fForget;
+	/** ターゲットの体力が同じ間カウントアップする。メイドの位置が悪くダメージを与えられない場合に移動させるためのカウンタ  */
+	protected int fTargetDamegeCounter;
+	/** ターゲットの体力 */
+	protected float fTargetHealth;
+	/** true=右回り、false=左回り */
+	protected boolean fTargetSearchDir;
 
 	
 	public LMM_EntityAIAttackArrow(LMM_EntityLittleMaid pEntityLittleMaid) {
@@ -36,6 +42,9 @@ public class LMM_EntityAIAttackArrow extends EntityAIBase implements LMM_IEntity
 		swingState = pEntityLittleMaid.getSwingStatusDominant();
 		worldObj = pEntityLittleMaid.worldObj;
 		fEnable = false;
+		fTargetDamegeCounter = 0;
+		fTargetHealth = 0;
+		fTargetSearchDir = fMaid.getRNG().nextBoolean();
 		setMutexBits(3);
 	}
 	
@@ -116,6 +125,28 @@ public class LMM_EntityAIAttackArrow extends EntityAIBase implements LMM_IEntity
 			double aty = fTarget.posY - fMaid.posY;
 			double atz = fTarget.posZ - fMaid.posZ;
 			if (fTarget.isEntityAlive()) {
+				
+				// ターゲットのHPに変化がある場合、攻撃を継続
+				if(fTarget.getHealth() != fTargetHealth)
+				{
+					fTargetHealth = fTarget.getHealth();
+					fTargetDamegeCounter = 0;
+				}
+				// ターゲットのHPに変化が無い場合、9秒間カウントする。カウント開始時に移動方向を反転する
+				else if(fTargetDamegeCounter < 9 * 20)
+				{
+//					System.out.println("##" + fTargetDamegeCounter/20 + " : " + (fTargetSearchDir?"R":"L"));
+					fTargetDamegeCounter++;
+					if(fTargetDamegeCounter == 1)
+					{
+						fTargetSearchDir = !fTargetSearchDir;
+					}
+				}
+				else
+				{
+					fTargetDamegeCounter = 0;
+				}
+				
 				ItemStack litemstack = fMaid.getCurrentEquippedItem();
 				// 敵とのベクトル
 				double atl = atx * atx + aty * aty + atz * atz;
@@ -163,15 +194,15 @@ public class LMM_EntityAIAttackArrow extends EntityAIBase implements LMM_IEntity
 					}
 					lcanattack &= (milsq > 3D || il < 0D);
 					lcanattack &= ldotarget;
-					// 横移動
-					if (!lcanattack) {
+					// 射線上に味方がいれば横移動、4秒以上敵のHPが変わらない場合も横移動
+					if (!lcanattack || fTargetDamegeCounter >= 4 * 20) {
 						// 射撃位置を確保する
 						double tpx = fMaid.posX;
 						double tpy = fMaid.posY;
 						double tpz = fMaid.posZ;
 //						double tpr = Math.sqrt(atl) * 0.5D;
-						tpr = tpr * 0.5D;
-						if (fMaid.isBloodsuck()) {
+						tpr = tpr * 0.25D;
+						if (fTargetSearchDir==false) {
 							// 左回り
 							tpx += (atz / tpr);
 							tpz -= (atx / tpr);
@@ -266,13 +297,14 @@ public class LMM_EntityAIAttackArrow extends EntityAIBase implements LMM_IEntity
 									// 変数を検索しAvatarと同じ物を自分と置き換える
 									ff.setAccessible(true);
 									Object eo = ff.get(te);
-									if (eo.equals(fAvatar)) {
-										ff.set(te, this);
+									if (eo != null && eo.equals(fAvatar)) {
+										ff.set(te, this.fMaid);
 										LMM_LittleMaidMobX.Debug("Replace FO Owner.");
 									}
 								}
 							}
 							catch (Exception exception) {
+								exception.printStackTrace();
 							}
 						}
 					}
