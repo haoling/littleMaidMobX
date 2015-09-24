@@ -133,6 +133,7 @@ public class LMM_EntityAIAttackArrow extends EntityAIBase implements LMM_IEntity
 					fTargetDamegeCounter = 0;
 				}
 				// ターゲットのHPに変化が無い場合、9秒間カウントする。カウント開始時に移動方向を反転する
+				// 9秒のうち、4秒以降は横移動する
 				else if(fTargetDamegeCounter < 9 * 20)
 				{
 //					System.out.println("##" + fTargetDamegeCounter/20 + " : " + (fTargetSearchDir?"R":"L"));
