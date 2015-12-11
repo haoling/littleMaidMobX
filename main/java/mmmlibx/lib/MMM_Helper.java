@@ -560,7 +560,7 @@ public class MMM_Helper {
 			
 			if (lentity.canBeCollidedWith()) {
 				float lexpand = lentity.getCollisionBorderSize() + 0.3F;
-				AxisAlignedBB laabb = lentity.boundingBox.expand((double)lexpand, (double)lexpand, (double)lexpand);
+				AxisAlignedBB laabb = lentity.boundingBox.expand((double)lexpand, (double)lexpand-0.3F, (double)lexpand);
 				MovingObjectPosition lmop = laabb.calculateIntercept(lvpos, lvview);
 				
 				if (laabb.isVecInside(lvpos)) {

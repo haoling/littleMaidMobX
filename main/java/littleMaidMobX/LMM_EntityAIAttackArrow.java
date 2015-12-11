@@ -117,7 +117,7 @@ public class LMM_EntityAIAttackArrow extends EntityAIBase implements LMM_IEntity
 		}
 		
 		// 攻撃対象を見る
-		fMaid.getLookHelper().setLookPositionWithEntity(fTarget, 30F, 30F);
+		fMaid.getLookHelper().setLookPositionWithEntity(fTarget, 80F, 80F);
 		
 		if (ldist < lrange) {
 			// 有効射程内

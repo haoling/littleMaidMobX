@@ -37,6 +37,7 @@ public class LMM_LittleMaidMobX {
 		"canDespawn = It will despawn, if it lets things go. ",
 		"checkOwnerName = At local, make sure the name of the owner. ",
 		"antiDoppelganger = Not to survive the doppelganger. ",
+		"antiDoppelgangerReplacePlayerMP = Not to survive the doppelganger. ",
 		"enableSpawnEgg = Enable LMM SpawnEgg Recipe. ",
 		"VoiceDistortion = LittleMaid Voice distortion.",
 		"defaultTexture = Default selected Texture Packege. Null is Random",
@@ -63,6 +64,8 @@ public class LMM_LittleMaidMobX {
 	public static boolean cfg_checkOwnerName = false;
 //	@MLProp(info="Not to survive the doppelganger. ")
 	public static boolean cfg_antiDoppelganger = true;
+//	@MLProp(info="Not to survive the doppelganger. ")
+	public static boolean cfg_antiDoppelgangerReplacePlayerMP = true;
 //	@MLProp(info="Enable LMM SpawnEgg Recipe. ")
 	public static boolean cfg_enableSpawnEgg = true;
 	

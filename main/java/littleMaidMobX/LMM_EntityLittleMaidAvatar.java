@@ -41,7 +41,7 @@ public class LMM_EntityLittleMaidAvatar extends EntityPlayer implements LMM_IEnt
 	}
 	
 	public LMM_EntityLittleMaidAvatar(World par1World, LMM_EntityLittleMaid par2EntityLittleMaid) {
-		super(par1World, W_Common.newGameProfile("1", "LMM_EntityLittleMaidAvatar"));
+		this(par1World);
 		
 		// 初期設定
 		avatar = par2EntityLittleMaid;

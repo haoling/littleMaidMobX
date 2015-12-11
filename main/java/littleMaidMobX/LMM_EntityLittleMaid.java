@@ -211,7 +211,14 @@ public class LMM_EntityLittleMaid extends EntityTameable implements ITextureEnti
 			}
 			else
 			{
-				maidAvatar = new LMM_EntityLittleMaidAvatarMP(par1World, this);
+				if(LMM_LittleMaidMobX.cfg_antiDoppelgangerReplacePlayerMP)
+				{
+					maidAvatar = new LMM_EntityLittleMaidAvatarMP(par1World, this);
+				}
+				else
+				{
+					maidAvatar = new LMM_EntityLittleMaidAvatar(par1World, this);
+				}
 			}
 		}
 		mstatOpenInventory = false;
@@ -636,7 +643,7 @@ public class LMM_EntityLittleMaid extends EntityTameable implements ITextureEnti
 			}
 		}
 		
-		LMM_LittleMaidMobX.Debug("id:%d LivingSound:%s", getEntityId(), worldObj == null ? "null" : worldObj.isRemote ? "Client" : "Server");
+//		LMM_LittleMaidMobX.Debug("id:%d LivingSound:%s", getEntityId(), worldObj == null ? "null" : worldObj.isRemote ? "Client" : "Server");
 		playLittleMaidSound(so, false);
 		return null;
 	}
@@ -687,7 +694,7 @@ public class LMM_EntityLittleMaid extends EntityTameable implements ITextureEnti
 			{
 				s = LMM_LittleMaidMobX.DOMAIN + ":" + s;
 			}
-			LMM_LittleMaidMobX.Debug(String.format("id:%d, se:%04x-%s (%s)", getEntityId(), enumsound.index, enumsound.name(), s));
+//			LMM_LittleMaidMobX.Debug(String.format("id:%d, se:%04x-%s (%s)", getEntityId(), enumsound.index, enumsound.name(), s));
 			if(s!= null && !s.isEmpty())
 			{
 				float lpitch = LMM_LittleMaidMobX.cfg_VoiceDistortion ? (rand.nextFloat() * 0.2F) + 0.95F : 1.0F;
@@ -1148,20 +1155,34 @@ public class LMM_EntityLittleMaid extends EntityTameable implements ITextureEnti
 		}
 		onInventoryChanged();
 		
+		deleteDoppelganger(true);
+	}
+	
+	public void deleteDoppelganger(boolean loading)
+	{
 		// ドッペル対策
 		if (LMM_LittleMaidMobX.cfg_antiDoppelganger && maidAnniversary > 0L) {
 			for (int i = 0; i < worldObj.loadedEntityList.size(); i++) {
 				Entity entity1 = (Entity)worldObj.loadedEntityList.get(i);
 				if (!entity1.isDead && entity1 instanceof LMM_EntityLittleMaid) {
 					LMM_EntityLittleMaid elm = (LMM_EntityLittleMaid)entity1;
-					if (elm != this && elm.isContract() && elm.maidAnniversary == maidAnniversary
-							&& elm.getMaidMaster().equalsIgnoreCase(getMaidMaster())) {
+					
+					if (elm == this) continue;
+					
+					boolean c1 = elm.isContract() && elm.maidAnniversary == maidAnniversary
+							&& elm.getMaidMaster().equalsIgnoreCase(getMaidMaster());
+					
+					boolean c2 = elm.entityUniqueID.toString().contentEquals(this.entityUniqueID.toString());
+					
+					if (c1 || c2) {
 						// 新しい方を残す
 						if (getEntityId() > elm.getEntityId()) {
-							LMM_LittleMaidMobX.Debug(String.format("Load Doppelganger ID:%d, %d" ,elm.getEntityId(), maidAnniversary));
+							LMM_LittleMaidMobX.Debug(String.format("Load Doppelganger ID:%d, Anniversary=%d :"+c1+":"+c2,
+									elm.getEntityId(), elm.maidAnniversary));
 							elm.setDead();
 						} else {
-							LMM_LittleMaidMobX.Debug(String.format("Load Doppelganger ID:%d, %d" ,getEntityId(), maidAnniversary));
+							LMM_LittleMaidMobX.Debug(String.format("Load Doppelganger ID:%d, Anniversary=%d :"+c1+":"+c2,
+									getEntityId(), maidAnniversary));
 							setDead();
 							break;
 						}
@@ -1169,9 +1190,12 @@ public class LMM_EntityLittleMaid extends EntityTameable implements ITextureEnti
 				}
 			}
 		} else {
-			LMM_LittleMaidMobX.Debug(String.format("Load ID:%d, MaidMaster:%s, x:%.1f, y:%.1f, z:%.1f, %d" ,getEntityId(), getMaidMaster(), posX, posY, posZ, maidAnniversary));
+			if(loading)
+			{
+				LMM_LittleMaidMobX.Debug(String.format("Load ID:%d, MaidMaster:%s, x:%.1f, y:%.1f, z:%.1f, Anniversary=%d",
+						getEntityId(), getMaidMaster(), posX, posY, posZ, maidAnniversary));
+			}
 		}
-		
 	}
 
 	@Override
@@ -2004,7 +2028,7 @@ public class LMM_EntityLittleMaid extends EntityTameable implements ITextureEnti
 					if (lchange || maidInventory.isChanged(li)) {
 						((WorldServer)worldObj).getEntityTracker().func_151247_a(this, new S04PacketEntityEquipment(this.getEntityId(), (li | lselect << 8) + 5, maidInventory.getStackInSlot(li)));
 						maidInventory.resetChanged(li);
-						LMM_LittleMaidMobX.Debug(String.format("ID:%d-%s - Slot(%x:%d-%d,%d) Update.", getEntityId(), worldObj.isRemote ? "Client" : "Server", lselect, li, mstatSwingStatus[0].index, mstatSwingStatus[1].index));
+//						LMM_LittleMaidMobX.Debug(String.format("ID:%d-%s - Slot(%x:%d-%d,%d) Update.", getEntityId(), worldObj.isRemote ? "Client" : "Server", lselect, li, mstatSwingStatus[0].index, mstatSwingStatus[1].index));
 					}
 //				}
 			}
@@ -2099,6 +2123,10 @@ public class LMM_EntityLittleMaid extends EntityTameable implements ITextureEnti
 			}
 		}
 		
+		if(this.ticksExisted == 3 || this.ticksExisted%(20*60)==0)
+		{
+			deleteDoppelganger(false);
+		}
 	}
 
 
@@ -2310,7 +2338,7 @@ public class LMM_EntityLittleMaid extends EntityTameable implements ITextureEnti
 				setTextureNames();
 			}
 			String s = par2ItemStack == null ? null : par2ItemStack.getDisplayName();
-			LMM_LittleMaidMobX.Debug(String.format("ID:%d Slot(%2d:%d):%s", getEntityId(), lslotindex, lequip, s == null ? "NoItem" : s));
+//			LMM_LittleMaidMobX.Debug(String.format("ID:%d Slot(%2d:%d):%s", getEntityId(), lslotindex, lequip, s == null ? "NoItem" : s));
 		}
 	}
 
