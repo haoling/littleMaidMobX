@@ -49,8 +49,8 @@ public class LMM_EntityAINearestAttackableTarget extends EntityAINearestAttackab
 //			return true;
 		} else {
 			double lfollowRange = this.getTargetDistance();
-			List llist = this.taskOwner.worldObj.getEntitiesWithinAABB(targetClass, taskOwner.boundingBox.expand(lfollowRange, 8.0D, lfollowRange));
-			if (theMaid.mstatMasterEntity != null && !theMaid.isBloodsuck()) {
+			List llist = this.taskOwner.worldObj.getEntitiesWithinAABB(targetClass, taskOwner.boundingBox.expand(lfollowRange, lfollowRange, lfollowRange));
+			if (theMaid.mstatMasterEntity != null && !theMaid.isBloodsuck() && !theMaid.isFreedom()) {
 				// ソーターを主中心へ
 				theNearestAttackableTargetSorter.setEntity(theMaid.mstatMasterEntity);
 			} else {

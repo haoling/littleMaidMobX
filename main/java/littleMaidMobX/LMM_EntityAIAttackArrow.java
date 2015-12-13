@@ -117,7 +117,7 @@ public class LMM_EntityAIAttackArrow extends EntityAIBase implements LMM_IEntity
 		}
 		
 		// 攻撃対象を見る
-		fMaid.getLookHelper().setLookPositionWithEntity(fTarget, 80F, 80F);
+		fMaid.getLookHelper().setLookPositionWithEntity(fTarget, 30F, 80F);
 		
 		if (ldist < lrange) {
 			// 有効射程内
@@ -172,7 +172,7 @@ public class LMM_EntityAIAttackArrow extends EntityAIBase implements LMM_IEntity
 //					mod_LMM_littleMaidMob.Debug("il:%f, milsq:%f", il, milsq);
 				}
 				
-				if (litemstack != null && !(litemstack.getItem() instanceof ItemFood) && !fMaid.weaponReload) {
+				if (litemstack != null && !(litemstack.getItem() instanceof ItemFood) && !fMaid.isWeaponReload()) {
 					int lastentityid = worldObj.loadedEntityList.size();
 					int itemcount = litemstack.stackSize;
 					fMaid.mstatAimeBow = true;
@@ -191,6 +191,11 @@ public class LMM_EntityAIAttackArrow extends EntityAIBase implements LMM_IEntity
 						}
 					}
 					if (lentity == fTarget) {
+						ldotarget = true;
+					}
+					else if(!fMaid.getIFF(lentity))
+					{
+						// ターゲットでなくても射線上にいるのが味方でなければ構わず撃つ
 						ldotarget = true;
 					}
 					lcanattack &= (milsq > 3D || il < 0D);
@@ -221,7 +226,7 @@ public class LMM_EntityAIAttackArrow extends EntityAIBase implements LMM_IEntity
 					
 					lcanattack &= lsee;
 //            		mod_littleMaidMob.Debug(String.format("id:%d at:%d", entityId, attackTime));
-					if (((fMaid.weaponFullAuto && !lcanattack) || (lcanattack && fMaid.getSwingStatusDominant().canAttack())) && getAvatarIF().getIsItemTrigger()) {
+					if (((fMaid.isWeaponFullAuto() && !lcanattack) || (lcanattack && fMaid.getSwingStatusDominant().canAttack())) && getAvatarIF().getIsItemTrigger()) {
 						// シュート
 						// フルオート武器は射撃停止
 						LMM_LittleMaidMobX.Debug("id:%d shoot.", fMaid.getEntityId());
@@ -234,7 +239,7 @@ public class LMM_EntityAIAttackArrow extends EntityAIBase implements LMM_IEntity
 							// リロード無しの通常兵装
 							if (!getAvatarIF().isUsingItemLittleMaid()) {
 								// 構え
-								if (!fMaid.weaponFullAuto || lcanattack) {
+								if (!fMaid.isWeaponFullAuto() || lcanattack) {
 									// フルオート兵装の場合は射線確認
 									int at = ((helmid == Items.iron_helmet) || (helmid == Items.diamond_helmet)) ? 26 : 16;
 									if (swingState.attackTime < at) {
@@ -331,7 +336,7 @@ public class LMM_EntityAIAttackArrow extends EntityAIBase implements LMM_IEntity
 				LMM_LittleMaidMobX.Debug("id:%d Target renge out.", fMaid.getEntityId());
 				fMaid.setAttackTarget(null);
 			}
-			if (fMaid.weaponFullAuto && getAvatarIF().getIsItemTrigger()) {
+			if (fMaid.isWeaponFullAuto() && getAvatarIF().getIsItemTrigger()) {
 				fAvatar.stopUsingItem();
 			} else {
 				fAvatar.clearItemInUse();

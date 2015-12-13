@@ -183,7 +183,7 @@ public class LMM_EntityMode_Archer extends LMM_EntityModeBase {
 	protected void updateGuns() {
 		if (owner.getAttackTarget() == null || !owner.getAttackTarget().isEntityAlive()) {
 			// 対象が死んだ
-			if (!owner.weaponReload) {
+			if (!owner.isWeaponReload()) {
 				if (owner.maidAvatar.isUsingItem()) {
 					// ターゲットが死んでいる時はアイテムの使用をクリア
 					if (owner.getAvatarIF().getIsItemReload()) {
@@ -198,7 +198,7 @@ public class LMM_EntityMode_Archer extends LMM_EntityModeBase {
 				owner.mstatAimeBow = true;
 			}
 		}
-		if (owner.weaponReload && !owner.maidAvatar.isUsingItem()) {
+		if (owner.isWeaponReload() && !owner.maidAvatar.isUsingItem()) {
 			// 特殊リロード
 			owner.maidInventory.getCurrentItem().useItemRightClick(owner.worldObj, owner.maidAvatar);
 			LMM_LittleMaidMobX.Debug("id:%d force reload.", owner.getEntityId());

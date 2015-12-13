@@ -160,8 +160,8 @@ public class LMM_EntityLittleMaid extends EntityTameable implements ITextureEnti
 	 */
 	public float entityIdFactor;
 	
-	public boolean weaponFullAuto;	// 装備がフルオート武器かどうか
-	public boolean weaponReload;	// 装備がリロードを欲しているかどうか
+	private boolean weaponFullAuto;	// 装備がフルオート武器かどうか
+	private boolean weaponReload;	// 装備がリロードを欲しているかどうか
 	public boolean maidCamouflage;
 	
 	
@@ -1863,8 +1863,8 @@ public class LMM_EntityLittleMaid extends EntityTameable implements ITextureEnti
 		}
 		
 		// 飛び道具用
-		weaponFullAuto = false;
-		weaponReload = false;
+		setWeaponFullAuto(false);
+		setWeaponReload(false);
 		
 		// 主の確認など
 		mstatMasterEntity = getMaidMasterEntity();
@@ -2251,7 +2251,7 @@ public class LMM_EntityLittleMaid extends EntityTameable implements ITextureEnti
 		
 		try {
 			Method me = is.getItem().getClass().getMethod("isWeaponReload", ItemStack.class, EntityPlayer.class);
-			weaponReload = (Boolean)me.invoke(is.getItem(), is, maidAvatar);
+			setWeaponReload((Boolean)me.invoke(is.getItem(), is, maidAvatar));
 		}
 		catch (NoSuchMethodException e) {
 		}
@@ -2260,7 +2260,7 @@ public class LMM_EntityLittleMaid extends EntityTameable implements ITextureEnti
 		
 		try {
 			Method me = is.getItem().getClass().getMethod("isWeaponFullAuto", ItemStack.class);
-			weaponFullAuto = (Boolean)me.invoke(is.getItem(), is);
+			setWeaponFullAuto((Boolean)me.invoke(is.getItem(), is));
 		}
 		catch (NoSuchMethodException e) {
 		}
@@ -2873,7 +2873,7 @@ public class LMM_EntityLittleMaid extends EntityTameable implements ITextureEnti
 		mstatSwingStatus[pArm].attackTime = pattacktime;
 //		maidAttackSound = enumsound;
 //		soundInterval = 0;// いるか？
-		if (!weaponFullAuto) {
+		if (!isWeaponFullAuto()) {
 			setSwinging(pArm, enumsound);
 		}
 		if (!worldObj.isRemote) {
@@ -3516,4 +3516,24 @@ public class LMM_EntityLittleMaid extends EntityTameable implements ITextureEnti
     {
         return this.height * 0.95F;
     }
+
+	public boolean isWeaponFullAuto()
+	{
+		return weaponFullAuto;
+	}
+
+	public void setWeaponFullAuto(boolean weaponFullAuto)
+	{
+		this.weaponFullAuto = weaponFullAuto;
+	}
+
+	public boolean isWeaponReload()
+	{
+		return weaponReload;
+	}
+
+	public void setWeaponReload(boolean weaponReload)
+	{
+		this.weaponReload = weaponReload;
+	}
 }
