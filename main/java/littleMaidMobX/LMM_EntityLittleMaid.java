@@ -1466,7 +1466,7 @@ public class LMM_EntityLittleMaid extends EntityTameable implements ITextureEnti
 			}
 		}
 		
-		LMM_LittleMaidMobX.Debug("LMM_EntityLittleMaid.attackEntityFrom "+this+"("+this.maidAvatar+") <= "+entity);
+		LMM_LittleMaidMobX.Debug("Damage="+par2 + ": LMM_EntityLittleMaid.attackEntityFrom "+this+"("+this.maidAvatar+") <= "+entity);
 		
 		// ダメージソースを特定して音声の設定
 		maidDamegeSound = LMM_EnumSound.hurt;

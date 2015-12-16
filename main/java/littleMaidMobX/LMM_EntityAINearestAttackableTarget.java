@@ -38,6 +38,10 @@ public class LMM_EntityAINearestAttackableTarget extends EntityAINearestAttackab
 		setMutexBits(1);
 	}
 
+	public double getTargetDistance()
+	{
+		return super.getTargetDistance()*1.4;
+	}
 	
 	@Override
 	public boolean shouldExecute() {
@@ -64,6 +68,7 @@ public class LMM_EntityAINearestAttackableTarget extends EntityAINearestAttackab
 				if (var3.isEntityAlive() && this.isSuitableTargetLM(var3, false)) {
 					this.targetEntity = var3;
 					ret = true;
+					break;
 				}
 			}
 		}

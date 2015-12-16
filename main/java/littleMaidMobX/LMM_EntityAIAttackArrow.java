@@ -31,8 +31,8 @@ public class LMM_EntityAIAttackArrow extends EntityAIBase implements LMM_IEntity
 	protected int fTargetDamegeCounter;
 	/** ターゲットの体力 */
 	protected float fTargetHealth;
-	/** true=右回り、false=左回り */
-	protected boolean fTargetSearchDir;
+	/** 1=右回り、2=左回り、0=待機 */
+	protected int fTargetSearchDir;
 
 	
 	public LMM_EntityAIAttackArrow(LMM_EntityLittleMaid pEntityLittleMaid) {
@@ -44,7 +44,7 @@ public class LMM_EntityAIAttackArrow extends EntityAIBase implements LMM_IEntity
 		fEnable = false;
 		fTargetDamegeCounter = 0;
 		fTargetHealth = 0;
-		fTargetSearchDir = fMaid.getRNG().nextBoolean();
+		fTargetSearchDir = 0;
 		setMutexBits(3);
 	}
 	
@@ -87,6 +87,18 @@ public class LMM_EntityAIAttackArrow extends EntityAIBase implements LMM_IEntity
 	public void resetTask() {
 		fTarget = null;
 	}
+	
+	public int getNextDir()
+	{
+		int now = fTargetSearchDir;
+		int next = 1 + fMaid.getRNG().nextInt(3);
+		if(now==next)
+		{
+		//	next = 1 + fMaid.getRNG().nextInt(3);
+		}
+		LMM_LittleMaidMobX.Debug("getNextDir() = " + next +" : "+ (next==3? "FORWARD": next==1? "RIGHT": "LEFT"));
+		return next;
+	}
 
 	@Override
 	public void updateTask() {
@@ -105,7 +117,8 @@ public class LMM_EntityAIAttackArrow extends EntityAIBase implements LMM_IEntity
 			fMaid.posZ += dtz / distTarget * 1.0;	// 1m 目標に近づける
 		}
 		
-		double lrange = 225D;
+		double DIST = 20;
+		double lrange = DIST * DIST;
 		double ldist = fMaid.getDistanceSqToEntity(fTarget);
 		boolean lsee = fMaid.getEntitySenses().canSee(fTarget);
 		
@@ -131,21 +144,17 @@ public class LMM_EntityAIAttackArrow extends EntityAIBase implements LMM_IEntity
 				{
 					fTargetHealth = fTarget.getHealth();
 					fTargetDamegeCounter = 0;
+					fTargetSearchDir = 0;
 				}
-				// ターゲットのHPに変化が無い場合、9秒間カウントする。カウント開始時に移動方向を反転する
-				// 9秒のうち、4秒以降は横移動する
-				else if(fTargetDamegeCounter < 9 * 20)
-				{
-//					System.out.println("##" + fTargetDamegeCounter/20 + " : " + (fTargetSearchDir?"R":"L"));
-					fTargetDamegeCounter++;
-					if(fTargetDamegeCounter == 1)
-					{
-						fTargetSearchDir = !fTargetSearchDir;
-					}
-				}
+				// ターゲットのHPに変化が無い場合、カウント開始時に移動方向を変える
 				else
 				{
-					fTargetDamegeCounter = 0;
+					if(fTargetDamegeCounter > (2*20))
+					{
+						fTargetSearchDir = getNextDir();
+						fTargetDamegeCounter = 0;
+					}
+					fTargetDamegeCounter++;
 				}
 				
 				ItemStack litemstack = fMaid.getCurrentEquippedItem();
@@ -170,6 +179,17 @@ public class LMM_EntityAIAttackArrow extends EntityAIBase implements LMM_IEntity
 					// 射線から主との距離
 					milsq = mix * mix + miy * miy + miz * miz;
 //					mod_LMM_littleMaidMob.Debug("il:%f, milsq:%f", il, milsq);
+				}
+
+				// 主が射線上にいる
+				if(!(milsq > 3D || il < 0D))
+				{
+					// 止まっている場合、移動させる
+					if(fTargetSearchDir == 0)
+					{
+						fTargetSearchDir = getNextDir();
+						fTargetDamegeCounter = 0;
+					}
 				}
 				
 				if (litemstack != null && !(litemstack.getItem() instanceof ItemFood) && !fMaid.isWeaponReload()) {
@@ -201,21 +221,27 @@ public class LMM_EntityAIAttackArrow extends EntityAIBase implements LMM_IEntity
 					lcanattack &= (milsq > 3D || il < 0D);
 					lcanattack &= ldotarget;
 					// 射線上に味方がいれば横移動、4秒以上敵のHPが変わらない場合も横移動
-					if (!lcanattack || fTargetDamegeCounter >= 4 * 20) {
+					if (!lcanattack || fTargetDamegeCounter > 0) {
 						// 射撃位置を確保する
 						double tpx = fMaid.posX;
 						double tpy = fMaid.posY;
 						double tpz = fMaid.posZ;
 //						double tpr = Math.sqrt(atl) * 0.5D;
-						tpr = tpr * 0.25D;
-						if (fTargetSearchDir==false) {
+						tpr = tpr * 0.5D;
+						if (fTargetSearchDir==2) {
 							// 左回り
 							tpx += (atz / tpr);
 							tpz -= (atx / tpr);
-						} else {
+						} else if (fTargetSearchDir==1) {
 							// 右回り
 							tpx -= (atz / tpr);
 							tpz += (atx / tpr);
+						} else if(fTargetSearchDir==3) {
+							// 前進
+							tpx += (atx / tpr);
+							tpz += (atz / tpr);
+						} else if(fTargetSearchDir==0) {
+							// 待機
 						}
 						fMaid.getNavigator().tryMoveToXYZ(tpx, tpy, tpz, 1.0F);
 					}
@@ -328,6 +354,8 @@ public class LMM_EntityAIAttackArrow extends EntityAIBase implements LMM_IEntity
 				}
 			}
 		} else {
+			fTargetDamegeCounter = 0;
+			
 			// 有効射程外
 			if (fMaid.getNavigator().noPath()) {
 				fMaid.getNavigator().tryMoveToEntityLiving(fTarget, 1.0);
