@@ -46,6 +46,7 @@ public class LMM_LittleMaidMobX {
 		"Dominant = Spawn Anywhere.",
 		"Aggressive = true: Will be hostile, false: Is a pacifist",
 		"IgnoreItemList = aaa, bbb, ccc: Items little maid to ignore",
+		"TriggerItemSortType = 0 ~ 3 (0=no sort, 1=name, 2=category & name, 3=category & data & name)",
 //		"AchievementID = used Achievement index.(0 = Disable)",
 //		"UniqueEntityId = UniqueEntityId(0 is AutoAssigned. max 255)"
 	};
@@ -86,6 +87,8 @@ public class LMM_LittleMaidMobX {
 //	@MLProp(info="true: Will be hostile, false: Is a pacifist")
 	public static boolean cfg_Aggressive = true;
 	public static String cfg_IgnoreItemList = "arsmagica2";
+	/** 0=none,<br> 1=name, <br>2=category & name, <br>3=category & item damage & name */
+	public static int cfg_TriggerItemSortType = 3;
 
 	public static Achievement ac_Contract;
 	

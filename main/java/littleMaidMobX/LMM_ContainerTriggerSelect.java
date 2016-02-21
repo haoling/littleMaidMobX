@@ -60,31 +60,77 @@ public class LMM_ContainerTriggerSelect extends ContainerCreative {
 		}
 
 		// List 生成 (ソート用)
-		Comparator cmp = new Comparator<ItemStack>()
-			{
-				public int compare(ItemStack i1, ItemStack i2)
+		if(LMM_LittleMaidMobX.cfg_TriggerItemSortType==3)
+		{
+			Comparator cmp = new Comparator<ItemStack>()
 				{
-					Item item1 = i1.getItem();
-					Item item2 = i2.getItem();
-					CreativeTabs ct1 = item1.getCreativeTab();
-					CreativeTabs ct2 = item2.getCreativeTab();
-					if(ct1!=null && ct2!=null)
+					public int compare(ItemStack i1, ItemStack i2)
 					{
-						if(ct1.getTabIndex() != ct2.getTabIndex())
+						Item item1 = i1.getItem();
+						Item item2 = i2.getItem();
+						CreativeTabs ct1 = item1.getCreativeTab();
+						CreativeTabs ct2 = item2.getCreativeTab();
+						if(ct1!=null && ct2!=null)
 						{
-							return ct1.getTabIndex() < ct2.getTabIndex()? -1: 1;
+							if(ct1.getTabIndex() != ct2.getTabIndex())
+							{
+								return ct1.getTabIndex() < ct2.getTabIndex()? -1: 1;
+							}
 						}
+						if(item1 == item2)
+						{
+							if(i1.getItemDamage() == i2.getItemDamage())
+							{
+								return 0;
+							}
+							return i1.getItemDamage() < i2.getItemDamage()? -1: 1;
+						}
+						
+						return (item1.getUnlocalizedName()).compareTo(item2.getUnlocalizedName());
 					}
-					if(item1 == item2)
+				};
+			Collections.sort(this.itemList, cmp);
+		}
+		else if(LMM_LittleMaidMobX.cfg_TriggerItemSortType==2)
+		{
+			Comparator cmp = new Comparator<ItemStack>()
+				{
+					public int compare(ItemStack i1, ItemStack i2)
 					{
-						System.out.println(i1.getDisplayName() + " : " + i2.getDisplayName());
-						return i1.getItemDamage() < i2.getItemDamage()? -1: 1;
+						Item item1 = i1.getItem();
+						Item item2 = i2.getItem();
+						CreativeTabs ct1 = item1.getCreativeTab();
+						CreativeTabs ct2 = item2.getCreativeTab();
+						if(ct1!=null && ct2!=null)
+						{
+							if(ct1.getTabIndex() != ct2.getTabIndex())
+							{
+								return ct1.getTabIndex() < ct2.getTabIndex()? -1: 1;
+							}
+						}
+						
+						return (item1.getUnlocalizedName()).compareTo(item2.getUnlocalizedName());
 					}
-					
-					return (item1.getUnlocalizedName()).compareTo(item2.getUnlocalizedName());
-				}
-			};
-		Collections.sort(this.itemList, cmp);
+				};
+			Collections.sort(this.itemList, cmp);
+		}
+		else if(LMM_LittleMaidMobX.cfg_TriggerItemSortType==1)
+		{
+			Comparator cmp = new Comparator<ItemStack>()
+				{
+					public int compare(ItemStack i1, ItemStack i2)
+					{
+						Item item1 = i1.getItem();
+						Item item2 = i2.getItem();
+						return (item1.getUnlocalizedName()).compareTo(item2.getUnlocalizedName());
+					}
+				};
+			Collections.sort(this.itemList, cmp);
+		}
+		else
+		{
+			// no sort
+		}
 	}
 
 	@Override
