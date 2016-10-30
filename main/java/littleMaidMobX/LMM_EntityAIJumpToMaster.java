@@ -81,30 +81,33 @@ public class LMM_EntityAIJumpToMaster extends EntityAIBase implements LMM_IEntit
 	@Override
 	public void startExecuting() {
 		if (jumpTarget) {
-			int i = MathHelper.floor_double(theOwner.posX) - 2;
-			int j = MathHelper.floor_double(theOwner.posZ) - 2;
-			int k = MathHelper.floor_double(theOwner.boundingBox.minY);
-			
-			for (int l = 0; l <= 4; l++) {
-				for (int i1 = 0; i1 <= 4; i1++) {
-					if ((l < 1 || i1 < 1 || l > 3 || i1 > 3)
-							&& theWorld.getBlock(i + l, k - 1, j + i1).isNormalCube()
-							&& !theWorld.getBlock(i + l, k, j + i1).isNormalCube()
-							&& !theWorld.getBlock(i + l, k + 1, j + i1).isNormalCube()) {
-						// 主の前に跳ばない
-						double dd = theOwner.getDistanceSq(
-								(double) (i + l) + 0.5D + MathHelper.sin(theOwner.rotationYaw * 0.01745329252F) * 2.0D,
-								(double) k,
-								(double) (j + i1) - MathHelper.cos(theOwner.rotationYaw * 0.01745329252F) * 2.0D);
-						if (dd > 8D) {
-//							theMaid.setTarget(null);
-//							theMaid.setRevengeTarget(null);
-//							theMaid.setAttackTarget(null);
-//							theMaid.getNavigator().clearPathEntity();
-							theMaid.setLocationAndAngles(
-									(float) (i + l) + 0.5F, k, (float) (j + i1) + 0.5F,
-									theMaid.rotationYaw, theMaid.rotationPitch);
-							return;
+			if(theOwner != null)
+			{
+				int i = MathHelper.floor_double(theOwner.posX) - 2;
+				int j = MathHelper.floor_double(theOwner.posZ) - 2;
+				int k = MathHelper.floor_double(theOwner.boundingBox.minY);
+				
+				for (int l = 0; l <= 4; l++) {
+					for (int i1 = 0; i1 <= 4; i1++) {
+						if ((l < 1 || i1 < 1 || l > 3 || i1 > 3)
+								&& theWorld.getBlock(i + l, k - 1, j + i1).isNormalCube()
+								&& !theWorld.getBlock(i + l, k, j + i1).isNormalCube()
+								&& !theWorld.getBlock(i + l, k + 1, j + i1).isNormalCube()) {
+							// 主の前に跳ばない
+							double dd = theOwner.getDistanceSq(
+									(double) (i + l) + 0.5D + MathHelper.sin(theOwner.rotationYaw * 0.01745329252F) * 2.0D,
+									(double) k,
+									(double) (j + i1) - MathHelper.cos(theOwner.rotationYaw * 0.01745329252F) * 2.0D);
+							if (dd > 8D) {
+	//							theMaid.setTarget(null);
+	//							theMaid.setRevengeTarget(null);
+	//							theMaid.setAttackTarget(null);
+	//							theMaid.getNavigator().clearPathEntity();
+								theMaid.setLocationAndAngles(
+										(float) (i + l) + 0.5F, k, (float) (j + i1) + 0.5F,
+										theMaid.rotationYaw, theMaid.rotationPitch);
+								return;
+							}
 						}
 					}
 				}
