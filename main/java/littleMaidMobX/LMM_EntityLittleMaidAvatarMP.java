@@ -19,6 +19,8 @@ import net.minecraft.util.DamageSource;
 import net.minecraft.util.IChatComponent;
 import net.minecraft.util.MathHelper;
 import net.minecraft.world.World;
+import net.minecraftforge.common.ForgeHooks;
+import net.minecraftforge.common.ISpecialArmor.ArmorProperties;
 import net.minecraftforge.common.util.FakePlayer;
 import wrapper.W_Common;
 
@@ -601,7 +603,44 @@ public class LMM_EntityLittleMaidAvatarMP extends FakePlayer implements LMM_IEnt
 
 	public void W_damageEntity(DamageSource par1DamageSource, float par2)
 	{
-		super.damageEntity(par1DamageSource, par2);
+		try
+		{
+			super.damageEntity(par1DamageSource, par2);
+		}
+		catch(Exception e)
+		{
+
+			if(!this.isEntityInvulnerable())
+			{
+//				par2 = ForgeHooks.onLivingHurt(this, par1DamageSource, par2);
+				if(par2 <= 0)
+				{
+					return;
+				}
+				if(!par1DamageSource.isUnblockable() && this.isBlocking() && par2 > 0.0F)
+				{
+					par2 = (1.0F + par2) * 0.5F;
+				}
+
+				par2 = ArmorProperties.ApplyArmor(this, inventory.armorInventory, par1DamageSource, par2);
+				if(par2 <= 0)
+				{
+					return;
+				}
+				par2 = this.applyPotionDamageCalculations(par1DamageSource, par2);
+				float f1 = par2;
+				par2 = Math.max(par2 - this.getAbsorptionAmount(), 0.0F);
+				this.setAbsorptionAmount(this.getAbsorptionAmount() - (f1 - par2));
+
+				if(par2 != 0.0F)
+				{
+					this.addExhaustion(par1DamageSource.getHungerDamage());
+					float f2 = this.getHealth();
+					this.setHealth(this.getHealth() - par2);
+					this.func_110142_aN().func_94547_a(par1DamageSource, f2, par2);
+				}
+			}
+		}
 	}
 
 	@Override
