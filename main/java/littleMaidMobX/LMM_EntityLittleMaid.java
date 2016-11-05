@@ -1746,7 +1746,14 @@ public class LMM_EntityLittleMaid extends EntityTameable implements ITextureEnti
 								// 特殊回収
 								((EntityArrow)entity).canBePickedUp = 1;
 							}
-							entity.onCollideWithPlayer(maidAvatar);
+							try
+							{
+								entity.onCollideWithPlayer(maidAvatar);
+							}
+							catch(Exception e)
+							{
+								e.printStackTrace();
+							}
 						}
 					}
 					// アイテムが一杯になっていてアイテムにタゲをとっている場合はタゲをクリア
