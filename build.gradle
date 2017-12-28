@@ -24,6 +24,13 @@ plugins {
 }
 */
 
+sourceSets {
+    main {
+        java { srcDirs = [ "$projectDir/main/java" ] }
+        resources { srcDirs = [ "$projectDir/main/resource" ] }
+    }
+}
+
 version = "${mod_version}.${build_number}"
 group= "LittleMaidMobX"
 archivesBaseName = "LittleMaidMobX"
@@ -38,10 +45,6 @@ compileJava {
 
 minecraft {
     version = "1.7.10-10.13.4.1614-1.7.10"
-    runDir = "run"
-    replace 'GRADLE:VERSION', version
-    replaceIn 'LMM_LittleMaidMobX.java'
-    mappings = "snapshot_20140925"
 }
 
 jar {
