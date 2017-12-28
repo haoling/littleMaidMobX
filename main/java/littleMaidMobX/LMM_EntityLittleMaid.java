@@ -80,6 +80,7 @@ import net.minecraft.util.MathHelper;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.Vec3;
 import net.minecraft.world.EnumDifficulty;
+import net.minecraft.world.GameRules;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
 import net.minecraft.world.biome.BiomeGenBase;
@@ -217,7 +218,13 @@ public class LMM_EntityLittleMaid extends EntityTameable implements ITextureEnti
 				}
 				else
 				{
+					GameRules gameRules = par1World.getGameRules();
+					NBTTagCompound oldGameRules = gameRules.writeGameRulesToNBT();
+					gameRules.setOrCreateGameRule("spawnRadius", "0");
+
 					maidAvatar = new LMM_EntityLittleMaidAvatar(par1World, this);
+
+					gameRules.readGameRulesFromNBT(oldGameRules);
 				}
 			}
 		}
